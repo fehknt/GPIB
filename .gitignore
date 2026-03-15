@@ -1,2 +1,6 @@
 **/*.exe
+**/*.pdb
 **/*.obj
+bin
+lib
+obj

@@ -31,17 +31,24 @@ conlibsmt = kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib
 # Targets
 #
 
-all: gpiblib.dll
+OBJDIR = obj
+BINDIR = bin
 
-gpiblib.obj: gpiblib.cpp decl-32.h gpiblib.h comblock.h
-	$(cc) $(cdebug) $(cflags) gpiblib.cpp
+all: dirs $(BINDIR)\gpiblib.dll
 
-gpiblib.dll: gpiblib.obj gpib-32.obj
-	$(link) $(ldebug) $(dlllflags) $(guilibsmt) gpiblib.obj gpib-32.obj winmm.lib kernel32.lib user32.lib shell32.lib
+dirs:
+	@if not exist $(OBJDIR) mkdir $(OBJDIR)
+	@if not exist $(BINDIR) mkdir $(BINDIR)
+
+$(OBJDIR)\gpiblib.obj: gpiblib.cpp decl-32.h gpiblib.h comblock.h
+	$(cc) $(cdebug) $(cflags) /Fo$@ gpiblib.cpp
+
+$(BINDIR)\gpiblib.dll: $(OBJDIR)\gpiblib.obj gpib-32.obj
+	$(link) $(ldebug) $(dlllflags) $(guilibsmt) $(OBJDIR)\gpiblib.obj gpib-32.obj winmm.lib kernel32.lib user32.lib shell32.lib /OUT:$@
 
 #
 # Optional standalone console app for test development, not built by default
 #
 
-gpiblib.exe: gpiblib.obj gpib-32.obj
-	$(link) $(ldebug) $(conflags) $(guilibsmt) gpiblib.obj gpib-32.obj winmm.lib kernel32.lib user32.lib shell32.lib
+$(BINDIR)\gpiblib.exe: $(OBJDIR)\gpiblib.obj gpib-32.obj
+	$(link) $(ldebug) $(conflags) $(guilibsmt) $(OBJDIR)\gpiblib.obj gpib-32.obj winmm.lib kernel32.lib user32.lib shell32.lib /OUT:$@
