@@ -1,0 +1,345 @@
+test 
+
+Microsoft (R) Program Maintenance Utility Version 14.50.35726.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  7470.cpp
+7470.cpp
+Building specan.obj
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE specan.cpp
+specan.cpp
+Building specan.lib
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:windows,6.0 -entry:_DllMainCRTStartup@12 -dll kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib specan.obj sh_api.lib gpiblib.lib kernel32.lib user32.lib winmm.lib
+   Creating library specan.lib and object specan.exp
+	rc 7470.rc
+Microsoft (R) Windows (R) Resource Compiler Version 10.0.10011.16384
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+Building 7470.exe
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:windows,6.0 -out:7470.exe 7470.obj specan.lib w32sal.lib winvfx16.lib gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib winmm.lib shell32.lib 7470.res
+	copy default_7470.ini 7470.ini
+        1 file(s) copied.
+Building parse.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  parse.cpp
+parse.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:parse.exe parse.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building printhpg.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  printhpg.cpp
+printhpg.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:printhpg.exe printhpg.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building query.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  query.cpp
+query.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:query.exe query.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building talk.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  talk.cpp
+talk.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:talk.exe talk.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building listen.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  listen.cpp
+listen.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:listen.exe listen.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building ntpquery.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  ntpquery.cpp
+ntpquery.cpp
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(117): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(123): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(165): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(181): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(224): warning C4996: 'WSAAsyncGetHostByAddr': Use getnameinfo() or GetNameInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(257): warning C4996: 'WSACancelAsyncRequest': Define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(399): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(410): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(444): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(526): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(556): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(567): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(642): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2489): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2500): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2798): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2814): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2826): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:ntpquery.exe ntpquery.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib wininet.lib
+Building tcplist.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  tcplist.cpp
+tcplist.cpp
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(117): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(123): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(165): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(181): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(224): warning C4996: 'WSAAsyncGetHostByAddr': Use getnameinfo() or GetNameInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(257): warning C4996: 'WSACancelAsyncRequest': Define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(399): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(410): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(444): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(526): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(556): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(567): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(642): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2489): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2500): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2798): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2814): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2826): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:tcplist.exe tcplist.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib ws2_32.lib
+Building readpkr.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  readpkr.cpp
+readpkr.cpp
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(117): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(123): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(165): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(181): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(224): warning C4996: 'WSAAsyncGetHostByAddr': Use getnameinfo() or GetNameInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(257): warning C4996: 'WSACancelAsyncRequest': Define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(399): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(410): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(444): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(526): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(556): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(567): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(642): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2489): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2500): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2798): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2814): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2826): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:readpkr.exe readpkr.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib ws2_32.lib
+Building readinst.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  readinst.cpp
+readinst.cpp
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(117): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(123): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(165): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(181): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(224): warning C4996: 'WSAAsyncGetHostByAddr': Use getnameinfo() or GetNameInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(257): warning C4996: 'WSACancelAsyncRequest': Define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(399): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(410): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(444): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(526): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(556): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(567): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(642): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2489): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2500): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2798): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2814): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2826): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:readinst.exe readinst.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib ws2_32.lib
+Building binquery.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  binquery.cpp
+binquery.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:binquery.exe binquery.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building atten_3488a.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  atten_3488a.cpp
+atten_3488a.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:atten_3488a.exe atten_3488a.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building 44471A.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  44471A.cpp
+44471A.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:44471A.exe 44471A.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building 5071a.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  5071a.cpp
+5071a.cpp
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(117): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(123): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(165): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(181): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(224): warning C4996: 'WSAAsyncGetHostByAddr': Use getnameinfo() or GetNameInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(257): warning C4996: 'WSACancelAsyncRequest': Define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(399): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(410): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(444): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(526): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(556): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(567): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(642): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2489): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2500): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2798): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2814): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\ipconn.cpp(2826): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:5071a.exe 5071a.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib user32.lib
+Building t962.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  t962.cpp
+t962.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:t962.exe t962.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib user32.lib
+Building 5370.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  5370.cpp
+5370.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:5370.exe 5370.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building 5345a.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  5345a.cpp
+5345a.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:5345a.exe 5345a.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building 8672a.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  8672a.cpp
+8672a.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:8672a.exe 8672a.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building 11848a.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  11848a.cpp
+11848a.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:11848a.exe 11848a.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building dts2070.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  dts2070.cpp
+dts2070.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:dts2070.exe dts2070.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building dso6000.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  dso6000.cpp
+dso6000.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:dso6000.exe dso6000.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building psaplot.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  psaplot.cpp
+psaplot.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:psaplot.exe psaplot.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building hp3458.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  hp3458.cpp
+hp3458.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:hp3458.exe hp3458.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib
+Building sgentest.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  /D_USE_32BIT_TIME_T sgentest.cpp
+sgentest.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:sgentest.exe sgentest.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building gnss.obj
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE gnss.cpp
+gnss.cpp
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1265): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1270): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1300): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1304): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1368): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+Building gnss.lib
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:windows,6.0 -entry:_DllMainCRTStartup@12 -dll kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib gnss.obj kernel32.lib user32.lib winmm.lib
+   Creating library gnss.lib and object gnss.exp
+Building gps.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  gps.cpp
+gps.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:gps.exe gps.obj gnss.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+Building cal_tek490.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  cal_tek490.cpp
+cal_tek490.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:cal_tek490.exe cal_tek490.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib
+Building txt2pnp.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  txt2pnp.cpp
+txt2pnp.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:txt2pnp.exe txt2pnp.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib
+Building satrace.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  satrace.cpp
+satrace.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:satrace.exe satrace.obj specan.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+	cl -Ox -MT -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  pn.cpp
+pn.cpp
+pn.cpp(15360): warning C4244: '=': conversion from 'double' to 'SINGLE', possible loss of data
+	rc pn.rc
+Microsoft (R) Windows (R) Resource Compiler Version 10.0.10011.16384
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+Building pn.exe
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:windows,6.0 -out:pn.exe pn.obj w32sal.lib winvfx16.lib gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib /NODEFAULTLIB:libcmtd.lib winmm.lib shell32.lib pn.res
+	copy default_pn.ini pn.ini
+        1 file(s) copied.
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  /D_USE_32BIT_TIME_T ssm.cpp
+ssm.cpp
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  /D_USE_32BIT_TIME_T xy.cpp
+xy.cpp
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  /D_USE_32BIT_TIME_T waterfall.cpp
+waterfall.cpp
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  /D_USE_32BIT_TIME_T recorder.cpp
+recorder.cpp
+	rc /I "" ssm.rc
+Microsoft (R) Windows (R) Resource Compiler Version 10.0.10011.16384
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+Building ssm.exe
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:windows,6.0 -out:ssm.exe ssm.obj xy.obj waterfall.obj recorder.obj w32sal.lib winvfx16.lib specan.lib gnss.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib winmm.lib shell32.lib ssm.res
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  /D_USE_32BIT_TIME_T ssmdump.cpp
+ssmdump.cpp
+Building ssmdump.exe
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:ssmdump.exe ssmdump.obj recorder.obj gnss.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  /D_USE_32BIT_TIME_T ssmchan.cpp
+ssmchan.cpp
+Building ssmchan.exe
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:ssmchan.exe ssmchan.obj recorder.obj gnss.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  tcheck.cpp
+tcheck.cpp
+	rc /I "" tcheck.rc
+Microsoft (R) Windows (R) Resource Compiler Version 10.0.10011.16384
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+Building tcheck.exe
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:windows,6.0 -out:tcheck.exe tcheck.obj xy.obj w32sal.lib winvfx16.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib winmm.lib shell32.lib tcheck.res
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  prologix.cpp
+prologix.cpp
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1265): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1270): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1300): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1304): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1368): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+prologix.cpp(787): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+prologix.cpp(793): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+	rc /I "" prologix.rc
+Microsoft (R) Windows (R) Resource Compiler Version 10.0.10011.16384
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+Building prologix.exe
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:windows,6.0 -out:prologix.exe prologix.obj gpiblib/gpib-32.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib winmm.lib shell32.lib comctl32.lib ws2_32.lib setupapi.lib prologix.res
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  vna.cpp
+vna.cpp
+	rc /I "" vna.rc
+Microsoft (R) Windows (R) Resource Compiler Version 10.0.10011.16384
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+Building vna.exe
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:windows,6.0 -out:vna.exe vna.obj gpiblib.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib gdi32.lib comdlg32.lib winmm.lib comctl32.lib vna.res
+Building dataq.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  dataq.cpp
+dataq.cpp
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\di154.cpp(426): warning C4838: conversion from 'int' to 'U8' requires a narrowing conversion
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:dataq.exe dataq.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib user32.lib
+Building visadmm.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  visadmm.cpp
+visadmm.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:visadmm.exe visadmm.obj agvisa32.lib kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib user32.lib
+Building MX20.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  MX20.cpp
+MX20.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:MX20.exe MX20.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib user32.lib
+Building txcom.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  txcom.cpp
+txcom.cpp
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:txcom.exe txcom.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib winmm.lib user32.lib
+Building echoserver.exe
+	cl -EHsc echoserver.cpp user32.lib wsock32.lib
+Microsoft (R) C/C++ Optimizing Compiler Version 19.50.35726 for x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+echoserver.cpp
+Microsoft (R) Incremental Linker Version 14.50.35726.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:echoserver.exe 
+echoserver.obj 
+user32.lib 
+wsock32.lib 
+Building echoclient.exe
+	cl -Zi -Od -DDEBUG -MTd -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo  -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95  -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400  -D_MT -D_CRT_SECURE_NO_DEPRECATE  echoclient.cpp
+echoclient.cpp
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1265): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1270): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1300): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1304): warning C4996: 'gethostbyname': Use getaddrinfo() or GetAddrInfoW() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+C:\Users\fehkn\OneDrive\Documents\GitHub\KE5FX\GPIB\gpiblib/comblock.h(1368): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+	link /DEBUG /DEBUGTYPE:cv /INCREMENTAL:NO /NOLOGO -subsystem:console,6.0 -out:echoclient.exe echoclient.obj kernel32.lib ws2_32.lib mswsock.lib advapi32.lib user32.lib ws2_32.lib winmm.lib user32.lib
+Building mtie.exe
+	cl -EHsc mtie.cpp user32.lib
+Microsoft (R) C/C++ Optimizing Compiler Version 19.50.35726 for x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+mtie.cpp
+Microsoft (R) Incremental Linker Version 14.50.35726.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:mtie.exe 
+mtie.obj 
+user32.lib 
