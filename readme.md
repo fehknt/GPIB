@@ -1,5 +1,7 @@
 # Welcome to the GPIB Toolkit!
 
+Note: This version of the GPIB Toolkit has been copied from KE5FX by W6DVN, with the explicit blessing of an attempt to make some updates to, and, ideally, support the opensource [Xyphro Labs GPIB adapter](https://github.com/xyphro/UsbGpib/).
+
 ![7470](./7470.gif)
 
 The **GPIB Toolkit** is a collection of free Windows utilities that will help you make and record research-quality measurements with GPIB-based electronic test equipment.  
