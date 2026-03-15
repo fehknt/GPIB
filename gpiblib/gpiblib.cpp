@@ -69,6 +69,8 @@ typedef ViStatus (__stdcall * P_viReadSTB)(ViSession vi, ViPUInt16 status);
 typedef ViStatus (__stdcall * P_viSetAttribute)(ViObject vi, ViAttr attrName, ViAttrState attrValue);
 typedef ViStatus (__stdcall * P_viStatusDesc)(ViObject vi, ViStatus status, ViChar desc[]);
 typedef ViStatus (__stdcall * P_viClear)(ViSession vi);
+typedef ViStatus (__stdcall * P_viFindRsrc)(ViSession sesn, ViString expr, ViPUInt32 vi, ViPUInt32 retCnt, ViChar desc[]);
+typedef ViStatus (__stdcall * P_viFindNext)(ViUInt32 vi, ViChar desc[]);
 
 // *****************************************************************************
 //
@@ -593,6 +595,8 @@ static P_viReadSTB p_viReadSTB = NULL;
 static P_viSetAttribute p_viSetAttribute = NULL;
 static P_viStatusDesc p_viStatusDesc = NULL;
 static P_viClear p_viClear = NULL;
+static P_viFindRsrc p_viFindRsrc = NULL;
+static P_viFindNext p_viFindNext = NULL;
 
 static ViSession defaultRM = VI_NULL;
 static ViSession instr = VI_NULL;
@@ -613,8 +617,10 @@ static bool load_visa(void)
    p_viSetAttribute = (P_viSetAttribute) GetProcAddress(hVISA, "viSetAttribute");
    p_viStatusDesc = (P_viStatusDesc) GetProcAddress(hVISA, "viStatusDesc");
    p_viClear = (P_viClear) GetProcAddress(hVISA, "viClear");
+   p_viFindRsrc = (P_viFindRsrc) GetProcAddress(hVISA, "viFindRsrc");
+   p_viFindNext = (P_viFindNext) GetProcAddress(hVISA, "viFindNext");
 
-   if (!p_viOpenDefaultRM || !p_viOpen || !p_viClose || !p_viWrite || !p_viRead)
+   if (!p_viOpenDefaultRM || !p_viOpen || !p_viClose || !p_viWrite || !p_viRead || !p_viFindRsrc || !p_viFindNext)
       return FALSE;
 
    return TRUE;
@@ -686,7 +692,7 @@ S32    WINAPI GPIB_online   (void)
       fclose(diag);
 #endif
       }
-   else
+   else if (INI_is_NI488)
       {
       serial_device = NULL;
 
@@ -764,8 +770,20 @@ S32    WINAPI GPIB_online   (void)
             1,                            /* Assert EOI line at end of write         */
             0);                           /* EOS termination mode                    */
       }
-      else if (INI_is_VISA)
+
+      if (ibsta & ERR) 
+         {                                /* Check for GPIB Error                    */
+         CloseHandle(hCOMSem);
+         hCOMSem = NULL;
+
+         GpibError("ibdev Error\n");
+         return 0;
+         }
+      }
+   else if (INI_is_VISA)
       {
+      serial_device = NULL;
+
       if (!load_visa())
          {
          GpibError("Could not load visa32.dll");
@@ -777,19 +795,7 @@ S32    WINAPI GPIB_online   (void)
          GpibError("viOpenDefaultRM failed");
          return 0;
          }
-
-      if (ibsta & ERR) 
-         {                                /* Check for GPIB Error                    */
-         CloseHandle(hCOMSem);
-         hCOMSem = NULL;
-
-         GpibError("ibdev Error\n");
-         return 0;
-         }
       }
-
-      // Instrument open is deferred to GPIB_connect to handle timeouts/settings
-   }
 
    online = 1;
 
@@ -876,7 +882,7 @@ bool WINAPI GPIB_offline  (S32 reset_to_local)
 #endif
          }
       }
-   else
+   else if (INI_is_NI488)
       {
       //
       // Close NI488.2 connection
@@ -905,19 +911,6 @@ bool WINAPI GPIB_offline  (S32 reset_to_local)
 //            return FALSE;
 //            }
          }
-      else if (INI_is_VISA)
-      {
-         if (instr != VI_NULL)
-            {
-            p_viClose(instr);
-            instr = VI_NULL;
-            }
-         if (defaultRM != VI_NULL)
-            {
-            p_viClose(defaultRM);
-            defaultRM = VI_NULL;
-            }
-      }
       else
          {
          ibonl(GPIB_ID, 0);
@@ -929,6 +922,19 @@ bool WINAPI GPIB_offline  (S32 reset_to_local)
 //            }
          }
       }
+   else if (INI_is_VISA)
+      {
+      if (instr != VI_NULL)
+         {
+         p_viClose(instr);
+         instr = VI_NULL;
+         }
+      if (defaultRM != VI_NULL)
+         {
+         p_viClose(defaultRM);
+         defaultRM = VI_NULL;
+         }
+      }
 
    online = 0;
 
@@ -938,6 +944,16 @@ bool WINAPI GPIB_offline  (S32 reset_to_local)
 //
 // GPIB_connect / GPIB_connect_ex()
 //
+
+static S32 extract_visa_addr(const C8* desc)
+{
+   S32 addr = -1;
+   const C8* gpib_part = strstr(desc, "GPIB_");
+   if (gpib_part && sscanf(gpib_part, "GPIB_%d_", &addr) == 1) return addr;
+   if (sscanf(desc, "GPIB%*d::%d::INSTR", &addr) == 1) return addr;
+   if (sscanf(desc, "GPIB::%d::INSTR", &addr) == 1) return addr;
+   return -1;
+}
 
 bool WINAPI GPIB_connect(S32        dev_address,
                          GPIBERR    handler, 
@@ -1228,15 +1244,41 @@ bool WINAPI GPIB_connect(S32        dev_address,
       }
    else if (INI_is_VISA)
       {
-      if (p_viOpen(defaultRM, INI_setup_string, 0, timeout_msecs, &instr) != VI_SUCCESS)
+      C8 target_resource[512];
+      strcpy(target_resource, INI_setup_string);
+
+      if (device_address != -1)
          {
-         GpibError("Could not open VISA resource %s", INI_setup_string);
+         if (extract_visa_addr(INI_setup_string) != device_address)
+            {
+            ViUInt32 findList;
+            ViUInt32 retCnt;
+            ViChar desc[256];
+            bool found = FALSE;
+
+            if (p_viFindRsrc(defaultRM, "?*::INSTR", &findList, &retCnt, desc) == 0)
+               {
+               do
+                  {
+                  if (extract_visa_addr(desc) == device_address)
+                     {
+                     strcpy(target_resource, desc);
+                     found = TRUE;
+                     break;
+                     }
+                  } while (p_viFindNext(findList, desc) == 0);
+               p_viClose(findList);
+               }
+            }
+         }
+
+      if (p_viOpen(defaultRM, target_resource, 0, timeout_msecs, &instr) != VI_SUCCESS)
+         {
+         GpibError("Could not open VISA resource %s", target_resource);
          return 0;
          }
 
       p_viSetAttribute(instr, VI_ATTR_TMO_VALUE, timeout_msecs);
-      p_viSetAttribute(instr, VI_ATTR_TERMCHAR, '\n');
-      p_viSetAttribute(instr, VI_ATTR_TERMCHAR_EN, VI_TRUE);
       p_viSetAttribute(instr, VI_ATTR_SEND_END_EN, VI_TRUE);
 
       if (clear)
@@ -1267,23 +1309,43 @@ bool WINAPI GPIB_connect_ex(C8        *dev_address,
    //
 
    C8 *dup = _strdup(dev_address);
+   S32 dev_addr = -1;
 
-   C8 *ptr = strchr(dup,':');
-
-   if (ptr == NULL)
+   if ((strstr(dup, "::") != NULL) || (!_strnicmp(dup, "USB", 3)))
       {
-      ptr = dup;
+      strcpy(INI_setup_string, dup);
+
+      INI_connection_type   = GC_NI488; // Treat as NI488 for now to avoid breaking apps checking for serial/lan
+      INI_is_Prologix       = 0;
+      INI_is_TCP            = 0;
+      INI_is_NI488          = 0;
+      INI_is_VISA           = 1;
+      INI_write_delay_ms    = 0;
+      INI_reset_to_local    = 1;
+      INI_restore_auto_read = 0;
+      INI_force_auto_read   = (force_auto_read != 0);
+      INI_enable_LON        = 0;
+      
+      dev_addr = extract_visa_addr(dup);
       }
    else
       {
-      *ptr = NULL;
-      ptr++;
-      }
+      C8 *ptr = strchr(dup,':');
 
-   S32 dev_addr = atoi(ptr);
+      if (ptr == NULL)
+         {
+         ptr = dup;
+         }
+      else
+         {
+         *ptr = NULL;
+         ptr++;
+         }
 
-   if (!_strnicmp(dup,"COM",3))
-      {
+      dev_addr = atoi(ptr);
+
+      if (!_strnicmp(dup,"COM",3))
+         {
       //
       // Replace connect.ini variables with a typical Prologix controller 
       // configuration (including ++lon for listen-only mode)
@@ -1303,8 +1365,8 @@ bool WINAPI GPIB_connect_ex(C8        *dev_address,
       INI_force_auto_read   = (force_auto_read != 0); 
       INI_enable_LON        = 1;
       }
-   else if (!_strnicmp(dup,"GPIB",4))
-      {
+      else if (!_strnicmp(dup,"GPIB",4))
+         {
       //
       // Replace connect.ini variables with a typical NI488.2 configuration
       //
@@ -1321,6 +1383,7 @@ bool WINAPI GPIB_connect_ex(C8        *dev_address,
       INI_restore_auto_read = 0;
       INI_force_auto_read   = (force_auto_read != 0);
       INI_enable_LON        = 0;
+      }
       }
 
    //
@@ -1789,7 +1852,15 @@ S32 WINAPI GPIB_set_EOS_mode(S32    new_EOS_char, //)
       else if (INI_is_VISA && instr != VI_NULL)
          {
          p_viSetAttribute(instr, VI_ATTR_SEND_END_EN, send_EOI_at_EOT ? VI_TRUE : VI_FALSE);
-         // VISA handles EOS via TERMCHAR attributes set in connect
+         if (EOS_char == -1)
+            {
+            p_viSetAttribute(instr, VI_ATTR_TERMCHAR_EN, VI_FALSE);
+            }
+         else
+            {
+            p_viSetAttribute(instr, VI_ATTR_TERMCHAR, EOS_char);
+            p_viSetAttribute(instr, VI_ATTR_TERMCHAR_EN, VI_TRUE);
+            }
          }
       }
    else
