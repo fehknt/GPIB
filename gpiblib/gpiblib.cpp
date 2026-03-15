@@ -33,7 +33,7 @@
 typedef unsigned long ViUInt32;
 typedef long ViInt32;
 typedef ViUInt32 ViSession;
-typedef ViUInt32 ViStatus;
+typedef ViInt32 ViStatus;
 typedef char ViChar;
 typedef unsigned char ViByte;
 typedef ViUInt32 ViAccessMode;
@@ -59,6 +59,8 @@ typedef unsigned short ViUInt16;
 #define VI_ATTR_TERMCHAR 0x3FFF0018UL
 #define VI_ATTR_TERMCHAR_EN 0x3FFF0038UL
 #define VI_ATTR_SEND_END_EN 0x3FFF0016UL
+#define VI_GPIB_REN_DEASSERT 0
+#define VI_GPIB_REN_ADDRESS_GTL 6
 
 typedef ViStatus (__stdcall * P_viOpenDefaultRM)(ViSession *vi);
 typedef ViStatus (__stdcall * P_viOpen)(ViSession sesn, ViRsrc name, ViAccessMode mode, ViUInt32 timeout, ViSession *vi);
@@ -71,6 +73,7 @@ typedef ViStatus (__stdcall * P_viStatusDesc)(ViObject vi, ViStatus status, ViCh
 typedef ViStatus (__stdcall * P_viClear)(ViSession vi);
 typedef ViStatus (__stdcall * P_viFindRsrc)(ViSession sesn, ViString expr, ViPUInt32 vi, ViPUInt32 retCnt, ViChar desc[]);
 typedef ViStatus (__stdcall * P_viFindNext)(ViUInt32 vi, ViChar desc[]);
+typedef ViStatus (__stdcall * P_viGpibControlREN)(ViSession vi, ViUInt16 mode);
 
 // *****************************************************************************
 //
@@ -597,6 +600,7 @@ static P_viStatusDesc p_viStatusDesc = NULL;
 static P_viClear p_viClear = NULL;
 static P_viFindRsrc p_viFindRsrc = NULL;
 static P_viFindNext p_viFindNext = NULL;
+static P_viGpibControlREN p_viGpibControlREN = NULL;
 
 static ViSession defaultRM = VI_NULL;
 static ViSession instr = VI_NULL;
@@ -619,6 +623,7 @@ static bool load_visa(void)
    p_viClear = (P_viClear) GetProcAddress(hVISA, "viClear");
    p_viFindRsrc = (P_viFindRsrc) GetProcAddress(hVISA, "viFindRsrc");
    p_viFindNext = (P_viFindNext) GetProcAddress(hVISA, "viFindNext");
+   p_viGpibControlREN = (P_viGpibControlREN) GetProcAddress(hVISA, "viGpibControlREN");
 
    if (!p_viOpenDefaultRM || !p_viOpen || !p_viClose || !p_viWrite || !p_viRead || !p_viFindRsrc || !p_viFindNext)
       return FALSE;
@@ -790,7 +795,7 @@ S32    WINAPI GPIB_online   (void)
          return 0;
          }
 
-      if (p_viOpenDefaultRM(&defaultRM) != VI_SUCCESS)
+      if (p_viOpenDefaultRM(&defaultRM) < 0)
          {
          GpibError("viOpenDefaultRM failed");
          return 0;
@@ -926,6 +931,10 @@ bool WINAPI GPIB_offline  (S32 reset_to_local)
       {
       if (instr != VI_NULL)
          {
+         if (reset_to_local && p_viGpibControlREN)
+            {
+            p_viGpibControlREN(instr, VI_GPIB_REN_ADDRESS_GTL);
+            }
          p_viClose(instr);
          instr = VI_NULL;
          }
@@ -1272,14 +1281,44 @@ bool WINAPI GPIB_connect(S32        dev_address,
             }
          }
 
-      if (p_viOpen(defaultRM, target_resource, 0, timeout_msecs, &instr) != VI_SUCCESS)
+      ViStatus status = p_viOpen(defaultRM, target_resource, VI_NULL, VI_NULL, &instr);
+
+      if (status < 0)
          {
-         GpibError("Could not open VISA resource %s", target_resource);
+         // Fallback: try to open a matching instrument by address, or the first available if address is -1
+         ViUInt32 findList;
+         ViUInt32 retCnt;
+         ViChar desc[256];
+         if (p_viFindRsrc(defaultRM, "?*::INSTR", &findList, &retCnt, desc) >= 0)
+            {
+            do
+               {
+               if (device_address == -1 || extract_visa_addr(desc) == device_address)
+                  {
+                  strcpy(target_resource, desc);
+                  status = p_viOpen(defaultRM, target_resource, VI_NULL, VI_NULL, &instr);
+                  if (status >= 0) break;
+                  }
+               } while (p_viFindNext(findList, desc) >= 0);
+            p_viClose(findList);
+            }
+         }
+
+      if (status < 0)
+         {
+         ViChar errDesc[256];
+         p_viStatusDesc(defaultRM, status, errDesc);
+         GpibError("Could not open VISA resource %s\nVISA Error: %s", target_resource, errDesc);
          return 0;
          }
 
       p_viSetAttribute(instr, VI_ATTR_TMO_VALUE, timeout_msecs);
       p_viSetAttribute(instr, VI_ATTR_SEND_END_EN, VI_TRUE);
+
+      if (device_address == -1 && p_viGpibControlREN)
+         {
+         p_viGpibControlREN(instr, VI_GPIB_REN_DEASSERT);
+         }
 
       if (clear)
          {
@@ -1948,7 +1987,8 @@ S32 WINAPI GPIB_write(C8    *string, //)
       ViUInt32 retCnt = 0;
       // For VISA, we might not want the \r\n appended by the buffer logic above, 
       // but gpiblib callers expect it.
-      if (p_viWrite(instr, (ViBuf)buffer, len, &retCnt) != VI_SUCCESS)
+      ViStatus status = p_viWrite(instr, (ViBuf)buffer, len, &retCnt);
+      if (status < 0)
          {
          GpibError("viWrite Error");
          return 0;
@@ -2024,7 +2064,8 @@ S32 WINAPI GPIB_write_BIN(void  *string, //)
    else if (INI_is_VISA)
       {
       ViUInt32 retCnt = 0;
-      if (p_viWrite(instr, (ViBuf)string, len, &retCnt) != VI_SUCCESS)
+      ViStatus status = p_viWrite(instr, (ViBuf)string, len, &retCnt);
+      if (status < 0)
          {
          GpibError("viWrite Error");
          return 0;
@@ -2134,7 +2175,8 @@ C8 * WINAPI GPIB_read_ASC   (S32    max_len, //)
       if (limit == -1) limit = sizeof(buffer)-1;
 
       ViUInt32 retCnt = 0;
-      if (p_viRead(instr, (ViPBuf)buffer, limit, &retCnt) != VI_SUCCESS)
+      ViStatus status = p_viRead(instr, (ViPBuf)buffer, limit, &retCnt);
+      if (status < 0)
          {
          if (report_timeout)
             GpibError("viRead Error");
@@ -2253,7 +2295,8 @@ C8 * WINAPI GPIB_read_BIN   (S32    max_len,  //)
       if (limit == -1) limit = sizeof(buffer)-1;
 
       ViUInt32 retCnt = 0;
-      if (p_viRead(instr, (ViPBuf)buffer, limit, &retCnt) != VI_SUCCESS)
+      ViStatus status = p_viRead(instr, (ViPBuf)buffer, limit, &retCnt);
+      if (status < 0)
          {
          if (report_timeout)
             GpibError("viRead Error");
@@ -2436,9 +2479,9 @@ void GpibError(C8 *msg, ...)
       {
       sprintf(APPEND," (Communications error)\n");
       }
-   else
+   else if (INI_is_NI488)
       {
-      sprintf (APPEND,"ibsta=&H%x  <", ibsta);
+      sprintf (APPEND,"\nibsta=&H%x  <", ibsta);
       if (ibsta & ERR )  sprintf (APPEND," ERR");
       if (ibsta & TIMO)  sprintf (APPEND," TIMO");
       if (ibsta & END )  sprintf (APPEND," END");
@@ -2474,6 +2517,10 @@ void GpibError(C8 *msg, ...)
       if (iberr == ETAB) sprintf (APPEND," ETAB <Table Overflow>\n");
      
       sprintf (APPEND,"ibcntl=%ld\n", ibcntl);
+      }
+   else if (INI_is_VISA)
+      {
+      sprintf(APPEND,"\n");
       }
 
    sprintf (APPEND,"\n");
