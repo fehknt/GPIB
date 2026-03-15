@@ -17,7 +17,7 @@ crelease = -Ox -MT
 cflags = -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo \
          -D_X86_=1 -DWIN32 -D_WIN32 -W3 -D_WIN95 \
          -D_WIN32_WINDOWS=0x0400 -D_WIN32_IE=0x400 -DWINVER=0x400 \
-         -D_MT -D_CRT_SECURE_NO_DEPRECATE
+         -D_MT -D_CRT_SECURE_NO_DEPRECATE /Fd$(OBJDIR)\
 
 link = link
 ldebug = /DEBUG /DEBUGTYPE:cv
@@ -36,6 +36,7 @@ BINDIR = bin
 LIBDIR = lib
 
 all: dirs \
+     $(BINDIR)\gpiblib.dll     \
      $(BINDIR)\7470.exe        \
      $(BINDIR)\7470.ini        \
      $(BINDIR)\parse.exe       \
@@ -89,15 +90,32 @@ dirs:
 	@if not exist $(LIBDIR) mkdir $(LIBDIR)
 
 #
+# GPIB Library
+#
+
+$(OBJDIR)\gpiblib.obj: gpiblib\gpiblib.cpp gpiblib\decl-32.h gpiblib\gpiblib.h gpiblib\comblock.h
+	$(cc) $(cdebug) $(cflags) /Fo$@ gpiblib\gpiblib.cpp
+
+$(BINDIR)\gpiblib.dll $(LIBDIR)\gpiblib.lib: $(OBJDIR)\gpiblib.obj gpiblib\gpib-32.obj
+	$(link) $(ldebug) $(dlllflags) $(guilibsmt) $(OBJDIR)\gpiblib.obj gpiblib\gpib-32.obj winmm.lib kernel32.lib user32.lib shell32.lib /OUT:$(BINDIR)\gpiblib.dll /IMPLIB:$(LIBDIR)\gpiblib.lib
+
+#
+# Optional standalone console app for test development, not built by default
+#
+
+$(BINDIR)\gpiblib.exe: $(OBJDIR)\gpiblib.obj gpiblib\gpib-32.obj
+	$(link) $(ldebug) $(conlflags) $(guilibsmt) $(OBJDIR)\gpiblib.obj gpiblib\gpib-32.obj winmm.lib kernel32.lib user32.lib shell32.lib /OUT:$@
+
+#
 # HP7470A emulator app
 #
 
 $(OBJDIR)\7470.res: 7470.ico 7470.rc 7470res.h
 	rc /fo$@ 7470.rc
 
-$(BINDIR)\7470.exe: $(OBJDIR)\7470.obj winvfx16.lib w32sal.lib gpiblib.lib $(LIBDIR)\specan.lib $(OBJDIR)\7470.res
+$(BINDIR)\7470.exe: $(OBJDIR)\7470.obj winvfx16.lib w32sal.lib $(LIBDIR)\gpiblib.lib $(LIBDIR)\specan.lib $(OBJDIR)\7470.res
 	@echo Building 7470.exe
-	$(link) $(ldebug) $(guilflags) -out:$@ $(OBJDIR)\7470.obj $(LIBDIR)\specan.lib w32sal.lib winvfx16.lib gpiblib.lib $(guilibsmt) winmm.lib shell32.lib $(OBJDIR)\7470.res
+	$(link) $(ldebug) $(guilflags) -out:$@ $(OBJDIR)\7470.obj $(LIBDIR)\specan.lib w32sal.lib winvfx16.lib $(LIBDIR)\gpiblib.lib $(guilibsmt) winmm.lib shell32.lib $(OBJDIR)\7470.res
 
 $(OBJDIR)\7470.obj: 7470.cpp w32sal.h winvfx.h gpiblib.h 7470lex.cpp 8566plt.h 49xplt.h specan.h 7470res.h appfile.cpp renderer.cpp
 	$(cc) $(cdebug) $(cflags) $(appflags) /Fo$@ 7470.cpp
@@ -113,9 +131,9 @@ $(BINDIR)\7470.ini: default_7470.ini
 $(OBJDIR)\pn.res: pn.ico pn.rc pnres.h
 	rc /fo$@ pn.rc
 
-$(BINDIR)\pn.exe: $(OBJDIR)\pn.obj winvfx16.lib w32sal.lib gpiblib.lib $(OBJDIR)\pn.res
+$(BINDIR)\pn.exe: $(OBJDIR)\pn.obj winvfx16.lib w32sal.lib $(LIBDIR)\gpiblib.lib $(OBJDIR)\pn.res
 	@echo Building pn.exe
-	$(link) $(ldebug) $(guilflags) -out:$@ $(OBJDIR)\pn.obj w32sal.lib winvfx16.lib gpiblib.lib $(guilibsmt) /NODEFAULTLIB:libcmtd.lib winmm.lib shell32.lib $(OBJDIR)\pn.res
+	$(link) $(ldebug) $(guilflags) -out:$@ $(OBJDIR)\pn.obj w32sal.lib winvfx16.lib $(LIBDIR)\gpiblib.lib $(guilibsmt) /NODEFAULTLIB:libcmtd.lib winmm.lib shell32.lib $(OBJDIR)\pn.res
 
 $(OBJDIR)\pn.obj: pn.cpp w32sal.h winvfx.h gpiblib.h pnres.h
 	$(cc) $(crelease) $(cflags) $(appflags) /Fo$@ pn.cpp
@@ -137,10 +155,10 @@ $(BINDIR)\txt2pnp.exe: txt2pnp.cpp
 # (070-3783-01)
 #
 
-$(BINDIR)\cal_tek490.exe: cal_tek490.cpp gpiblib.lib
+$(BINDIR)\cal_tek490.exe: cal_tek490.cpp $(LIBDIR)\gpiblib.lib
 	@echo Building cal_tek490.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\cal_tek490.obj cal_tek490.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\cal_tek490.obj gpiblib.lib $(conlibsmt)
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\cal_tek490.obj $(LIBDIR)\gpiblib.lib $(conlibsmt)
 
 #
 # HPGL parser for testing
@@ -164,37 +182,37 @@ $(BINDIR)\printhpg.exe: printhpg.cpp 7470lex.cpp
 # Submit query to instrument
 #
 
-$(BINDIR)\query.exe: query.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\query.exe: query.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building query.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\query.obj query.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\query.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\query.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Submit query to instrument, saving binary result to file
 #
 
-$(BINDIR)\binquery.exe: binquery.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\binquery.exe: binquery.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building binquery.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\binquery.obj binquery.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\binquery.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\binquery.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Issue command to instrument
 #
 
-$(BINDIR)\talk.exe: talk.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\talk.exe: talk.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building talk.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\talk.obj talk.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\talk.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\talk.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Monitor bus in listen-only mode
 #
 
-$(BINDIR)\listen.exe: listen.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\listen.exe: listen.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building listen.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\listen.obj listen.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\listen.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\listen.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Query time from NTP server
@@ -237,28 +255,28 @@ $(BINDIR)\readinst.exe: readinst.cpp ipconn.cpp timeutil.cpp appfile.cpp stdtpl.
 # Test signal generator at random frequencies and amplitudes
 #
 
-$(BINDIR)\sgentest.exe: sgentest.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\sgentest.exe: sgentest.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building sgentest.exe
 	cl $(cdebug) $(cflags) $(appflags) /D_USE_32BIT_TIME_T /Fo$(OBJDIR)\sgentest.obj sgentest.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\sgentest.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\sgentest.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Program 33004A/33005A attenuators connected to HP 3488A / 44470A switch box
 #
 
-$(BINDIR)\atten_3488a.exe: atten_3488a.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\atten_3488a.exe: atten_3488a.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building atten_3488a.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\atten_3488a.obj atten_3488a.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\atten_3488a.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\atten_3488a.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Control relays on 44471A card in HP 3448A chassis
 #
 
-$(BINDIR)\44471A.exe: 44471A.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\44471A.exe: 44471A.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building 44471A.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\44471A.obj 44471A.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\44471A.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\44471A.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Set HP 5071A clock to NTP server time
@@ -300,74 +318,74 @@ $(BINDIR)\t962.exe: t962.cpp timeutil.cpp comport.cpp
 # Request current frequency from HP 5370A/B
 #
 
-$(BINDIR)\5370.exe: 5370.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\5370.exe: 5370.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building 5370.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\5370.obj 5370.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\5370.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\5370.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Request current frequency from HP 5345A
 #
 
-$(BINDIR)\5345a.exe: 5345a.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\5345a.exe: 5345a.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building 5345a.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\5345a.obj 5345a.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\5345a.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\5345a.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Set freq/amplitude on HP 8672A
 #
 
-$(BINDIR)\8672a.exe: 8672a.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\8672a.exe: 8672a.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building 8672a.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\8672a.obj 8672a.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\8672a.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\8672a.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Control various features in HP 11848a
 #
 
-$(BINDIR)\11848a.exe: 11848a.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\11848a.exe: 11848a.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building 11848a.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\11848a.obj 11848a.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\11848a.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\11848a.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Trigger and take readings from Wavecrest DTS 207x digital time analyzer
 #
 
-$(BINDIR)\dts2070.exe: dts2070.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\dts2070.exe: dts2070.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building dts2070.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\dts2070.obj dts2070.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\dts2070.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\dts2070.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Acquire .GIF screen dump from Agilent E4406A vector signal analyzer
 #
 
-$(BINDIR)\psaplot.exe: psaplot.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\psaplot.exe: psaplot.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building psaplot.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\psaplot.obj psaplot.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\psaplot.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\psaplot.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Trigger and take readings from Agilent DSO/MSO model
 # (tested with MSO6054A)
 #
 
-$(BINDIR)\dso6000.exe: dso6000.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\dso6000.exe: dso6000.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building dso6000.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\dso6000.obj dso6000.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\dso6000.obj gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\dso6000.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Back up calibration and data NVRAMs from HP 3458A multimeter
 #
 
-$(BINDIR)\hp3458.exe: hp3458.cpp gpiblib.h gpiblib.lib
+$(BINDIR)\hp3458.exe: hp3458.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
 	@echo Building hp3458.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\hp3458.obj hp3458.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\hp3458.obj gpiblib.lib $(conlibsmt)
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\hp3458.obj $(LIBDIR)\gpiblib.lib $(conlibsmt)
 
 #
 # DLL to fetch raw binary traces from spectrum analyzers
@@ -377,9 +395,9 @@ $(OBJDIR)\specan.obj: specan.cpp spline.cpp specan.h gpiblib.h
 		@echo Building specan.obj
 		$(cc) $(cdebug) $(cflags) /Fo$@ specan.cpp
 
-$(BINDIR)\specan.dll $(LIBDIR)\specan.lib: $(OBJDIR)\specan.obj gpiblib.lib
+$(BINDIR)\specan.dll $(LIBDIR)\specan.lib: $(OBJDIR)\specan.obj $(LIBDIR)\gpiblib.lib
 		@echo Building specan.lib
-		$(link) $(ldebug) $(dlllflags) $(guilibsmt) $(OBJDIR)\specan.obj sh_api.lib gpiblib.lib kernel32.lib user32.lib winmm.lib /out:$(BINDIR)\specan.dll /IMPLIB:$(LIBDIR)\specan.lib
+		$(link) $(ldebug) $(dlllflags) $(guilibsmt) $(OBJDIR)\specan.obj sh_api.lib $(LIBDIR)\gpiblib.lib kernel32.lib user32.lib winmm.lib /out:$(BINDIR)\specan.dll /IMPLIB:$(LIBDIR)\specan.lib
 
 #
 # DLL to fetch fix information from various GNSS receivers (NMEA GPS, etc.)
@@ -389,7 +407,7 @@ $(OBJDIR)\gnss.obj: gnss.cpp gnss.h gpiblib\comblock.h
 		@echo Building gnss.obj
 		$(cc) $(cdebug) $(cflags) /Fo$@ gnss.cpp
 
-$(BINDIR)\gnss.dll $(LIBDIR)\gnss.lib: $(OBJDIR)\gnss.obj gpiblib.lib
+$(BINDIR)\gnss.dll $(LIBDIR)\gnss.lib: $(OBJDIR)\gnss.obj $(LIBDIR)\gpiblib.lib
 		@echo Building gnss.lib
 		$(link) $(ldebug) $(dlllflags) $(guilibsmt) $(OBJDIR)\gnss.obj kernel32.lib user32.lib winmm.lib /out:$(BINDIR)\gnss.dll /IMPLIB:$(LIBDIR)\gnss.lib
 
@@ -510,9 +528,9 @@ $(OBJDIR)\prologix.obj: prologix.cpp typedefs.h prores.h gpiblib\comblock.h
 $(OBJDIR)\vna.res: vna.ico vna.rc vnares.h
 	rc /fo$@ vna.rc
 
-$(BINDIR)\vna.exe: $(OBJDIR)\vna.obj gpiblib.lib $(OBJDIR)\vna.res
+$(BINDIR)\vna.exe: $(OBJDIR)\vna.obj $(LIBDIR)\gpiblib.lib $(OBJDIR)\vna.res
 	@echo Building vna.exe
-	$(link) $(ldebug) $(guilflags) -out:$@ $(OBJDIR)\vna.obj gpiblib.lib $(guilibsmt) winmm.lib comctl32.lib $(OBJDIR)\vna.res
+	$(link) $(ldebug) $(guilflags) -out:$@ $(OBJDIR)\vna.obj $(LIBDIR)\gpiblib.lib $(guilibsmt) winmm.lib comctl32.lib $(OBJDIR)\vna.res
 
 $(OBJDIR)\vna.obj: vna.cpp sparams.cpp spline.cpp typedefs.h gpiblib.h vnares.h
 	$(cc) $(cdebug) $(cflags) $(appflags) /Fo$@ vna.cpp
@@ -554,4 +572,4 @@ clean:
 	if exist $(OBJDIR) rmdir /S /Q $(OBJDIR)
 	if exist $(BINDIR) rmdir /S /Q $(BINDIR)
 	if exist $(LIBDIR) rmdir /S /Q $(LIBDIR)
-	del *.exe *.obj *.res specan.lib gnss.lib 7470.ini pn.ini
+	del *.exe *.obj *.res *.pdb specan.lib gnss.lib 7470.ini pn.ini

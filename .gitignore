@@ -1,6 +1,10 @@
 **/*.exe
 **/*.pdb
 **/*.obj
-bin
-lib
-obj
+**/*.ini
+**/*.lib
+**/*.exp
+**/*.res
+bin/gnss.dll
+bin/specan.dll
+bin/gpiblib.dll
