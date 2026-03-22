@@ -4876,10 +4876,10 @@ bool WINAPI SA_configure_sweep(DOUBLE center_Hz, DOUBLE span_Hz,
       state.type == SATYPE_HP8566B_8568B || state.type == SATYPE_HP8560 ||
       state.type == SATYPE_HP8590) {
     if (rbw_Hz <= 0.0)
-      SA_printf("SNGLS;CF %lfHZ;SP %lfHZ;RL %lfDM;RB AUTO;", center_Hz, span_Hz,
+      SA_printf("SNGLS;CF %.0fHZ;SP %.0fHZ;RL %.1fDM;RB AUTO;", center_Hz, span_Hz,
                 ref_level_dBm);
     else
-      SA_printf("SNGLS;CF %lfHZ;SP %lfHZ;RL %lfDM;RB %lfHZ;", center_Hz, span_Hz,
+      SA_printf("SNGLS;CF %.0fHZ;SP %.0fHZ;RL %.1fDM;RB %.0fHZ;", center_Hz, span_Hz,
                 ref_level_dBm, rbw_Hz);
                 
     state.min_Hz = center_Hz - (span_Hz / 2.0);

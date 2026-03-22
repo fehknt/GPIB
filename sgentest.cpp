@@ -244,8 +244,8 @@ int main(S32 argc, C8 **argv) {
         "         -wait:0.25    .... Wait 250 milliseconds after programming "
         "generator\n"
         "         -8662         .... Check for HP 8662A/8663A hardware errors\n"
-        "         -8560         .... 8560-series compatibility mode\n"
         "         -8672         .... 8672-series compatibility mode\n"
+        "         -8673         .... 8673-series compatibility mode\n"
         "         -8340         .... 8340-series compatibility mode\n"
         "         -log:filename .... Log output to filename\n"
         "         -trials:1000  .... Stop after 1000 trials\n"
@@ -279,6 +279,9 @@ int main(S32 argc, C8 **argv) {
     printf("  sgentest 18 19 -8672 -fmax:18E9 -fmin:2E9 -amax:8 -amin:-50 "
            "-atol:4 -loss:4\n");
     printf("  (Set output level range to -110 dBm before running)\n");
+    printf("\nExample to test HP 8673B:\n\n");
+    printf("  sgentest 18 19 -8673 -fmax:26.5E9 -fmin:2E9 -amax:8 -amin:-50 "
+           "-atol:4 -loss:4\n");
     printf("\nExample to test HP 8340A/B or 8341A/B:\n\n");
     printf("  sgentest 18 19 -8340 -fmax:20E9 -fmin:1E7 -amax:8 -amin:-20 "
            "-atol:4 -loss:4\n");
@@ -308,6 +311,7 @@ int main(S32 argc, C8 **argv) {
   U32 rand_seed = 0;
   bool use_8560 = FALSE;
   bool use_8672 = FALSE;
+  bool use_8673 = FALSE;
   bool use_8340 = FALSE;
   bool verbose = FALSE;
   DOUBLE amplitude_step = 0.0;
@@ -602,6 +606,18 @@ int main(S32 argc, C8 **argv) {
     }
 
     //
+    // -8673: HP 8673-series signal generator
+    //
+
+    option = strstr(lpCmdLine, (C8 *)"-8673");
+
+    if (option != NULL) {
+      use_8673 = TRUE;
+      memmove(option, &option[5], strlen(&option[5]) + 1);
+      continue;
+    }
+
+    //
     // -8340: HP 834xA/B
     //
 
@@ -644,6 +660,10 @@ int main(S32 argc, C8 **argv) {
     //
 
     break;
+  }
+
+  if (use_8673 && amplitude_step == 0.0) {
+    amplitude_step = 10.0;
   }
 
   //
@@ -814,6 +834,34 @@ int main(S32 argc, C8 **argv) {
       }
     }
 
+    if (use_8672) {
+      freq = (freq / 1000LL) * 1000LL; // quantize to whole-number kHz
+
+      if (freq > 6199999000LL &&
+          freq < 12400000000LL) // band 2 sets in 2 kHz increments
+      {
+        freq = (S64)(freq / 2000LL) * 2000LL;
+      }
+
+      if (freq > 12399999999LL) // band 3 sets in 3 kHz increments
+      {
+        freq = (S64)(freq / 3000LL) * 3000LL;
+      }
+    }
+
+    if (use_8673) {
+      // 8673B quantization
+      if (freq < 6600000000LL) {
+        freq = (freq / 1000LL) * 1000LL;
+      } else if (freq < 12300000000LL) {
+        freq = (freq / 2000LL) * 2000LL;
+      } else if (freq < 18600000000LL) {
+        freq = (S64)(freq / 3000LL) * 3000LL;
+      } else {
+        freq = (freq / 4000LL) * 4000LL;
+      }
+    }
+
     if ((freq < min_Hz) || (freq > max_Hz)) {
       continue;
     }
@@ -861,23 +909,7 @@ int main(S32 argc, C8 **argv) {
     // settings upon disconnection, unlike most other signal generators
     //
 
-    if (use_8672) {
-      S64 qfreq =
-          (freq / 1000LL) * 1000LL; // quantize to whole-number kHz for 8672A
-
-      if (qfreq > 6199999000LL &&
-          qfreq < 12400000000LL) // band 2 sets in 2 kHz increments
-      {
-        qfreq = (S64)(qfreq / 2000LL) * 2000LL;
-      }
-
-      if (qfreq > 12399999999LL) // band 3 sets in 3 kHz increments
-      {
-        qfreq = (S64)(qfreq / 3000LL) * 3000LL;
-      }
-
-      freq = qfreq;
-
+    if (use_8672 || use_8673) {
       GPIB_connect(addr_specan, GPIB_error, 0, 1000);
 
       SA_configure_sweep((DOUBLE)freq, freq_tolerance * 10.0,
@@ -894,29 +926,28 @@ int main(S32 argc, C8 **argv) {
 
     if (use_8340) {
       GPIB_printf("CW%I64dHZ;PL%dDB", freq, ampl);
-    } else {
-      if (!use_8672) {
-        GPIB_printf("FR %I64dHZ;AP %dDM", freq, ampl);
+    } else if (use_8672) {
+      GPIB_printf(
+          "P%08I64dZ1M0N6", // "P" loads freq, Z1 executes freq, M0=AM off,
+                            // N6=FM off
+          (S64)max(2000000LL, min((freq / 1000LL),
+                                  18599997LL))); // freq in 8-digits of kHz,
+                                                 // min 2 GHz, max 18.6 GHz
+
+      if (ampl > 0) {
+        GPIB_printf("K0L%cO3", '=' - ampl);
       } else {
         GPIB_printf(
-            "P%08I64dZ1M0N6", // "P" loads freq, Z1 executes freq, M0=AM off,
-                              // N6=FM off
-            (S64)max(2000000LL, min((freq / 1000LL),
-                                    18599997LL))); // freq in 8-digits of kHz,
-                                                   // min 2 GHz, max 18.6 GHz
-
-        if (ampl > 0) {
-          GPIB_printf("K0L%cO3", '=' - ampl);
-        } else {
-          GPIB_printf(
-              "K%cL%cO1", // "P" loads freq, Z1 executes freq, K: step atten, L:
-                          // vernier, M: AM, N: FM, O: ALC
-              C8('0' + (abs(ampl) / 10) % 12), // K-command: 0 to -110 dB step
-                                               // attenuation ('0','1',...';')
-              C8('3' + (abs(ampl) % 10)));     // L-command: 0 to -9 dB vernier,
-                                               // offset by 3 ('3','4',...'<')
-        }
+            "K%cL%cO1", // "P" loads freq, Z1 executes freq, K: step atten, L:
+                        // vernier, M: AM, N: FM, O: ALC
+            C8('0' + (abs(ampl) / 10) % 12), // K-command: 0 to -110 dB step
+                                             // attenuation ('0','1',...';')
+            C8('3' + (abs(ampl) % 10)));     // L-command: 0 to -9 dB vernier,
+                                             // offset by 3 ('3','4',...'<')
       }
+    } else {
+      // 8673B and others use standard FR/AP format
+      GPIB_printf("FR %I64dHZ;AP %dDM", freq, ampl);
     }
     GPIB_printf("RF1;");
     Sleep(100);
@@ -991,7 +1022,7 @@ int main(S32 argc, C8 **argv) {
       GPIB_connect(addr_specan, GPIB_error, 0,
                    120000); // Allow up to 120 seconds for traces to fetch
 
-      if (!use_8672) {
+      if (!use_8672 && !use_8673) {
         SA_configure_sweep((DOUBLE)freq, freq_tolerance * 10.0,
                            (DOUBLE)ampl + 10.0, 0.0);
       }
