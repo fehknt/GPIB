@@ -238,6 +238,7 @@ int main(S32 argc, C8 **argv) {
         "         -amin:-90     .... Minimum test power = -90 dBm\n"
         "         -amax:10      .... Maximum test power = 10 dBm\n"
         "         -loss:1.0     .... Interconnect loss in dB at fmax\n"
+        "         -loss_min:0.5 .... Interconnect loss in dB at fmin\n"
         "         -ftol:200     .... Frequency tolerance = +/- 200 Hz\n"
         "         -atol:2       .... Amplitude tolerance = +/- 2 dB\n"
         "         -wait:0.25    .... Wait 250 milliseconds after programming "
@@ -298,6 +299,7 @@ int main(S32 argc, C8 **argv) {
   DOUBLE min_dBm = -90.0;
   DOUBLE max_dBm = 10.0;
   DOUBLE loss_at_fmax = 0.0;
+  DOUBLE loss_at_fmin = -1.0;
   DOUBLE ampl_tolerance = 2.0;
   DOUBLE freq_tolerance = 200.0;
   DOUBLE tune_secs = 0.25;
@@ -360,6 +362,20 @@ int main(S32 argc, C8 **argv) {
 
     if (option != NULL) {
       sscanf(option, "-loss:%lf%n", &loss_at_fmax, &len);
+
+      end = option + len;
+      memmove(option, end, strlen(end) + 1);
+      continue;
+    }
+
+    //
+    // -loss_min: Loss at fmin
+    //
+
+    option = strstr(lpCmdLine, (C8*) "-loss_min:");
+
+    if (option != NULL) {
+      sscanf(option, "-loss_min:%lf%n", &loss_at_fmin, &len);
 
       end = option + len;
       memmove(option, end, strlen(end) + 1);
@@ -816,7 +832,25 @@ int main(S32 argc, C8 **argv) {
     // now)
     //
 
-    DOUBLE loss = loss_at_fmax / sqrt(max_Hz / freq);
+    DOUBLE loss;
+
+    if (loss_at_fmin < 0.0) {
+      // Original model: loss at DC is assumed to be 0
+      loss = loss_at_fmax / sqrt(max_Hz / freq);
+    } else {
+      // Two-point model: interpolate between loss at fmin and fmax
+      DOUBLE sqrt_fmin = sqrt(min_Hz);
+      DOUBLE sqrt_fmax = sqrt(max_Hz);
+      DOUBLE sqrt_freq = sqrt((DOUBLE)freq);
+
+      if (sqrt_fmax > sqrt_fmin) {
+        loss = loss_at_fmin + (loss_at_fmax - loss_at_fmin) *
+                                  ((sqrt_freq - sqrt_fmin) /
+                                   (sqrt_fmax - sqrt_fmin));
+      } else {
+        loss = loss_at_fmax;
+      }
+    }
 
     //
     // For 8672A, tune spectrum analyzer to quantized frequency and start a
