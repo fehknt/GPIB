@@ -4219,14 +4219,24 @@ void WINAPI SA_fetch_trace(void) {
     static U16 curve[401];
     static DOUBLE trace[401];
 
-    DOUBLE swp_time = SA_query_sweep_time("ST?;");
+    DOUBLE swp_time = SA_query_sweep_time("ST?");
 
     GPIB_flush_receive_buffers();
     SA_printf("CLRW TRA;TS;");
-    Sleep((S32)(swp_time * 1000.0) + 1000);
 
-    SA_printf(
-        "TDF B;MDS W;TA;"); // Request 16-bit binary display values from trace A
+    //
+    // Wait for sweep to complete (SIP bit 3, 0x08)
+    //
+    S32 start_time = (S32)timeGetTime();
+    while (GPIB_serial_poll() & 0x08) {
+      if ((S32)timeGetTime() - start_time > (S32)(swp_time * 1000.0) + 5000) {
+        break;
+      }
+      if (interruptable_sleep(100))
+        break;
+    }
+
+    SA_printf("TDF B;MDS W;TRA?"); // Request 16-bit binary display values from trace A
 
     memset(curve, 0, 401 * sizeof(S16));
     memcpy(curve, GPIB_read_BIN(401 * sizeof(S16), TRUE, FALSE),
