@@ -644,7 +644,7 @@ DXDEC S32  WINAPI VFX_pane_copy             (PANE           *source,
 DXDEC S32  WINAPI VFX_pane_stretch          (PANE           *source,
                                              PANE           *target);
 
-DXDEC S32  WINAPI VFX_pane_locate           (PANE           *source, //)
+DXDEC S32  WINAPI VFX_pane_locate           (PANE           *source,
                                              PANE           *target,
                                              S32            *x,
                                              S32            *y);

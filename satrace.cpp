@@ -14,11 +14,22 @@
 #include <mmsystem.h>
 
 #include "typedefs.h"
+#include "gpiblib.h"
 #include "specan.h"
 
 #define VERSION "1.12"
 
 SA_STATE *state;
+S32 addr_specan = -1;
+
+void shutdown(void);
+
+void WINAPI GPIB_error(C8 *msg, S32 ibsta, S32 iberr, S32 ibcntl)
+ {
+  printf("%s", msg);
+  shutdown();
+  exit(1);
+}
 
 //*************************************************************
 //
@@ -69,13 +80,17 @@ S64 ascnum(C8 *string, U32 base, C8 **end = NULL)
    return sgn * total;
 }
 
-void shutdown(void)
-{
-   SA_shutdown();
+void shutdown(void) {
+  // Reconnect to analyzer before calling SA_shutdown
+  // so that it can send the continuous-sweep command
+  // without triggering a viWrite Error on a disconnected instrument
+  GPIB_connect(addr_specan, NULL, 0, 10000);
+
+  SA_shutdown();
+  GPIB_disconnect();
 }
 
-void main(S32 argc, C8 **argv)
-{
+int main(S32 argc, C8 **argv) {
    setbuf(stdout,NULL);
 
    if (argc < 2)
@@ -331,22 +346,21 @@ void main(S32 argc, C8 **argv)
 
    SA_parse_command_line(lpCmdLine);
 
-   S32 addr = (S32) ascnum(lpCmdLine, 10);
+    addr_specan = (S32)ascnum(lpCmdLine, 10);
 
-   if (((!lpCmdLine[0]) || (!addr)) && (!state->SA44_mode))
-      {
+    if (((!lpCmdLine[0]) || (!addr_specan)) && (!state->SA44_mode)) {
       printf("Error -- must specify GPIB address\n");
       exit(1);
-      }
-     
-   //
-   // Connect to analyzer and show header if requested
-   //
+    }
 
-   if (!SA_connect(addr))
-      {
+    //
+    // Connect to analyzer and show header if requested
+    //
+
+    if (!SA_connect(addr_specan, (C8 *)lpCmdLine, GPIB_error)) {
+      printf("Error identifying analyzer at address %s\n", argv[1]);
       exit(1);
-      }
+    }
 
    if (show_header)
       {
@@ -434,4 +448,5 @@ void main(S32 argc, C8 **argv)
       }
 
    SA_disconnect(TRUE);
+   return 0;
 }

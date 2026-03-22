@@ -608,7 +608,7 @@ DOUBLE CQ::Var(RGB_BOX *cube)
 //
 //****************************************************************************
 
-DOUBLE CQ::Maximize(RGB_BOX *cube, //)
+DOUBLE CQ::Maximize(RGB_BOX *cube,
                    U8    dir, 
                    S32     first, 
                    S32     last, 
@@ -1182,7 +1182,7 @@ U8 CMAP::nearest_neighbor(VFX_RGB *triplet, S32 dither)
 //
 //****************************************************************************
 
-VFX_RGB *  TGA_parse(void *TGA_image, //)
+VFX_RGB *  TGA_parse(void *TGA_image,
                             S32  *x_res, 
                             S32  *y_res)
 {
@@ -1412,7 +1412,7 @@ VFX_RGB *  TGA_parse(void *TGA_image, //)
 //
 //****************************************************************************
 
-bool TGA_write_16bpp  (PANE *src, //)
+bool TGA_write_16bpp  (PANE *src,
                        C8   *filename)
 {
    //
@@ -3045,7 +3045,7 @@ int write_gif_file(char *filename, Gif *gif)
 //
 //****************************************************************************
 
-bool  GIF_write_16bpp  (PANE *src, //)
+bool  GIF_write_16bpp  (PANE *src,
                         C8   *filename)
 {
    //
@@ -3182,7 +3182,7 @@ bool  GIF_write_16bpp  (PANE *src, //)
 //
 //****************************************************************************
 
-bool  BMP_write_16bpp  (PANE *src, //)
+bool  BMP_write_16bpp  (PANE *src,
                         C8   *filename)
 {
    //
@@ -3351,7 +3351,7 @@ static void encodePcxLine(FILE **fp, unsigned char *buf, int wide)
 }
 
 /***************************************************************************/
-unsigned char *PCX_load (char *filename, //)
+unsigned char *PCX_load (char *filename,
                          int  *wide,
                          int  *tall)
 {
@@ -3515,7 +3515,7 @@ unsigned char *PCX_load_palette (char *filename)
 //
 //****************************************************************************
 
-bool  PCX_write_16bpp  (PANE *src, //)
+bool  PCX_write_16bpp  (PANE *src,
                         C8   *filename)
 {
    //

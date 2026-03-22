@@ -10,3 +10,4 @@
 bin/gnss.dll
 bin/specan.dll
 bin/gpiblib.dll
+build.bat

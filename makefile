@@ -255,10 +255,10 @@ $(BINDIR)\readinst.exe: readinst.cpp ipconn.cpp timeutil.cpp appfile.cpp stdtpl.
 # Test signal generator at random frequencies and amplitudes
 #
 
-$(BINDIR)\sgentest.exe: sgentest.cpp gpiblib.h $(LIBDIR)\gpiblib.lib
+$(BINDIR)\sgentest.exe: sgentest.cpp gpiblib.h $(LIBDIR)\gpiblib.lib $(LIBDIR)\specan.lib
 	@echo Building sgentest.exe
 	cl $(cdebug) $(cflags) $(appflags) /D_USE_32BIT_TIME_T /Fo$(OBJDIR)\sgentest.obj sgentest.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\sgentest.obj $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\sgentest.obj $(LIBDIR)\gpiblib.lib $(LIBDIR)\specan.lib $(conlibsmt) winmm.lib
 
 #
 # Program 33004A/33005A attenuators connected to HP 3488A / 44470A switch box
@@ -424,10 +424,10 @@ $(BINDIR)\gps.exe: gps.cpp gnss.h $(LIBDIR)\gnss.lib
 # Request .CSV traces from spectrum analyzers
 #
 
-$(BINDIR)\satrace.exe: satrace.cpp specan.h $(LIBDIR)\specan.lib
+$(BINDIR)\satrace.exe: satrace.cpp specan.h $(LIBDIR)\specan.lib $(LIBDIR)\gpiblib.lib
 	@echo Building satrace.exe
 	cl $(cdebug) $(cflags) $(appflags) /Fo$(OBJDIR)\satrace.obj satrace.cpp
-	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\satrace.obj $(LIBDIR)\specan.lib $(conlibsmt) winmm.lib
+	$(link) $(ldebug) $(conlflags) -out:$@ $(OBJDIR)\satrace.obj $(LIBDIR)\specan.lib $(LIBDIR)\gpiblib.lib $(conlibsmt) winmm.lib
 
 #
 # Fetch and scale data from a DataQ DI-154RS or DI-194RS serial DAQ unit

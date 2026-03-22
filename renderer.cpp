@@ -2987,7 +2987,7 @@ void gl_close_polygon()
 //gl_add_poly(
 //   gl_poly_buf[gl_poly_start].x,gl_poly_buf[gl_poly_start].y,
 //   gl_poly_buf[gl_poly_start].flags | (POLY_PENDOWN)
-//);
+;
    gl_add_poly(
       gl_poly_buf[gl_poly_start].x,gl_poly_buf[gl_poly_start].y,
 ////  (gl_poly_buf[gl_poly_start].flags & (~POLY_PENDOWN)) | 0x20

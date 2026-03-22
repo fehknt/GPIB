@@ -4,6 +4,18 @@
 
 #pragma once
 
+#include <stdint.h>
+#include <stddef.h>
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#else
+#ifndef WINAPI
+#define WINAPI
+#endif
+#endif
+
 //
 // Subset of MSVC warnings promoted to errors so compile will fail even if /WX isn't used
 //  

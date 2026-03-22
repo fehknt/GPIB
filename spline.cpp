@@ -5,7 +5,7 @@
 //
 //***************************************************************************
 
-void lerp_gen (DOUBLE *src_X,  DOUBLE *src_Y,  S32 src_len, //)
+void lerp_gen (DOUBLE *src_X,  DOUBLE *src_Y,  S32 src_len,
                DOUBLE *dest_X, DOUBLE *dest_Y, S32 dest_len)
 {
    if ((dest_X[0] < src_X[0]) || (dest_X[dest_len-1] > src_X[src_len-1]))
@@ -50,7 +50,7 @@ void lerp_gen (DOUBLE *src_X,  DOUBLE *src_Y,  S32 src_len, //)
 //
 //***************************************************************************
 
-void spline_gen (DOUBLE *src_X,  DOUBLE *src_Y,  S32 src_len, //)
+void spline_gen (DOUBLE *src_X,  DOUBLE *src_Y,  S32 src_len,
                  DOUBLE *dest_X, DOUBLE *dest_Y, S32 dest_len)
 {
    if ((dest_X[0] < src_X[0]) || (dest_X[dest_len-1] > src_X[src_len-1]))
@@ -208,7 +208,7 @@ static void getYD_gen(DOUBLE *X, DOUBLE *Y, DOUBLE *YD, S32 len)
    free(A);
 }
 
-void ispline_gen(DOUBLE *X1, DOUBLE *Y1, S32 len1, //)
+void ispline_gen(DOUBLE *X1, DOUBLE *Y1, S32 len1,
                  DOUBLE *X2, DOUBLE *Y2, S32 len2)
 {
    S32 i,j;
@@ -299,7 +299,7 @@ static void getYD(DOUBLE *Y, DOUBLE *YD, S32 len)
    tridiag(YD,len);
 }
 
-void ispline(DOUBLE *Y1, S32 len1, //)
+void ispline(DOUBLE *Y1, S32 len1,
              DOUBLE *Y2, S32 len2)
 {
    S32 i,oip;
@@ -340,7 +340,7 @@ void ispline(DOUBLE *Y1, S32 len1, //)
 // Alternative version used by TCheck utility
 //
 
-void ispline_t(DOUBLE *Y1, S32 len1, //)
+void ispline_t(DOUBLE *Y1, S32 len1,
                DOUBLE *Y2, S32 len2)
 {
    S32 i,oip;

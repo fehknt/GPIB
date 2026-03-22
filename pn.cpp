@@ -1931,7 +1931,7 @@ S32 current_data_source;
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_HP8566A_HP8567A_HP8568A(S32 clip, //)
+void EXIT_HP8566A_HP8567A_HP8568A(S32 clip,
                                   S64 carrier_Hz)
 {
    if (out != NULL)
@@ -2538,7 +2538,7 @@ BOOL ACQ_HP8566A_HP8567A_HP8568A(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_HP8566B_HP8567B_HP8568B(S32 clip, //)
+void EXIT_HP8566B_HP8567B_HP8568B(S32 clip,
                                   S64 carrier_Hz)
 {
    if (out != NULL)
@@ -3111,7 +3111,7 @@ BOOL ACQ_HP8566B_HP8567B_HP8568B(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_HP8560(S32 clip, //)
+void EXIT_HP8560(S32 clip,
                  S64 carrier_Hz)
 {
    if (out != NULL)
@@ -3676,7 +3676,7 @@ BOOL ACQ_HP8560(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_HP8590(S32 clip, //)
+void EXIT_HP8590(S32 clip,
                  S64 carrier_Hz)
 {
    if (out != NULL)
@@ -4231,7 +4231,7 @@ BOOL ACQ_HP8590(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_HP4195(S32 clip, //)
+void EXIT_HP4195(S32 clip,
                  S64 carrier_Hz)
 {
    if (out != NULL)
@@ -4791,7 +4791,7 @@ BOOL ACQ_HP4195(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_HP70000(S32 clip, //)
+void EXIT_HP70000(S32 clip,
                   S64 carrier_Hz)
 {
    if (out != NULL)
@@ -5323,7 +5323,7 @@ BOOL ACQ_HP70000(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_TEK490(S32 clip, //)
+void EXIT_TEK490(S32 clip,
                  S64 tune_Hz)
 {
    if (out != NULL)
@@ -5914,7 +5914,7 @@ XINCR:%lf,XZERO:%lf,XUNIT:HZ,YOFF:%f,YMULT:%f,YZERO:%f",
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_TEK2780(S32 clip, //)
+void EXIT_TEK2780(S32 clip,
                   S64 carrier_Hz)
 {
    if (out != NULL)
@@ -6471,7 +6471,7 @@ BOOL ACQ_TEK2780(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_HP3585(S32 clip, //)
+void EXIT_HP3585(S32 clip,
                  S64 carrier_Hz)
 {
    if (out != NULL)
@@ -6911,7 +6911,7 @@ BOOL ACQ_HP3585 (C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_HP358XA(S32 clip, //)
+void EXIT_HP358XA(S32 clip,
                   S64 carrier_Hz)
 {
    if (out != NULL)
@@ -7335,7 +7335,7 @@ BOOL ACQ_HP358XA(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_HP4396A(S32 clip, //)
+void EXIT_HP4396A(S32 clip,
                   S64 carrier_Hz)
 {
    if (out != NULL)
@@ -7795,7 +7795,7 @@ BOOL ACQ_HP4396A(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_R3267(S32 clip, //)
+void EXIT_R3267(S32 clip,
                 S64 carrier_Hz)
 {
    if (out != NULL)
@@ -8262,7 +8262,7 @@ BOOL ACQ_R3267(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_R3465(S32 clip, //)
+void EXIT_R3465(S32 clip,
                 S64 carrier_Hz)
 {
    if (out != NULL)
@@ -8715,7 +8715,7 @@ BOOL ACQ_R3465(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_R3131(S32 clip, //)
+void EXIT_R3131(S32 clip,
                 S64 carrier_Hz)
 {
    if (out != NULL)
@@ -9164,7 +9164,7 @@ BOOL ACQ_R3131(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_R3132(S32 clip, //)
+void EXIT_R3132(S32 clip,
                 S64 carrier_Hz)
 {
    if (out != NULL)
@@ -9612,7 +9612,7 @@ BOOL ACQ_R3132(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_R3261(S32 clip, //)
+void EXIT_R3261(S32 clip,
                 S64 carrier_Hz)
 {
    if (out != NULL)
@@ -10107,7 +10107,7 @@ BOOL ACQ_R3261(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_TR417X(S32 clip, //)
+void EXIT_TR417X(S32 clip,
                  S64 carrier_Hz)
 {
    if (out != NULL)
@@ -10559,7 +10559,7 @@ BOOL ACQ_TR417X(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_MS8604A(S32 clip, //)
+void EXIT_MS8604A(S32 clip,
                   S64 carrier_Hz)
 {
    if (out != NULL)
@@ -11109,7 +11109,7 @@ BOOL ACQ_MS8604A(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_MS2650(S32 clip, //)
+void EXIT_MS2650(S32 clip,
                  S64 carrier_Hz)
 {
    if (out != NULL)
@@ -11658,7 +11658,7 @@ BOOL ACQ_MS2650(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_FSIQ(S32 clip, //)
+void EXIT_FSIQ(S32 clip,
                S64 carrier_Hz,
                S32 dig_1kHz,
                S32 FFT_filters)
@@ -12176,7 +12176,7 @@ BOOL ACQ_FSIQ(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_E4400(S32 clip, //)
+void EXIT_E4400(S32 clip,
                 S64 carrier_Hz)
 {
    if (out != NULL)
@@ -12623,7 +12623,7 @@ BOOL ACQ_E4400(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_N9900(S32 clip, //)
+void EXIT_N9900(S32 clip,
                 S64 carrier_Hz)
 {
    if (out != NULL)
@@ -13062,7 +13062,7 @@ BOOL ACQ_N9900(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void EXIT_E4406A(S32 clip, //)
+void EXIT_E4406A(S32 clip,
                  S64 carrier_Hz,
                  S32 orig_averaging_status)
 {
@@ -13507,7 +13507,7 @@ BOOL ACQ_E4406A(C8    *filename,
 //*                                                                          *
 //****************************************************************************
 
-void * FILE_read (C8     *filename, //)     
+void * FILE_read (C8     *filename,     
                   S32    *len_dest     = NULL,
                   void   *dest         = NULL,
                   S32     len          = -1,
@@ -13999,7 +13999,7 @@ BOOL CenterWindow(HWND hwndChild, HWND hwndParent)
 
 S32 already_sent = FALSE;
 
-UINT CALLBACK SFNHookProc(HWND hdlg,      // handle to the dialog box window //)
+UINT CALLBACK SFNHookProc(HWND hdlg,      // handle to the dialog box window
                           UINT uiMsg,     // message identifier
                           WPARAM wParam,  // message parameter
                           LPARAM lParam)  // message parameter
@@ -14044,7 +14044,7 @@ UINT CALLBACK SFNHookProc(HWND hdlg,      // handle to the dialog box window //)
 //*                                                                          *
 //****************************************************************************
 
-UINT CALLBACK OFNHookProc(HWND hdlg,      // handle to the dialog box window //)
+UINT CALLBACK OFNHookProc(HWND hdlg,      // handle to the dialog box window
                           UINT uiMsg,     // message identifier
                           WPARAM wParam,  // message parameter
                           LPARAM lParam)  // message parameter
@@ -14115,7 +14115,7 @@ RECT *client_screen_rect(HWND hWnd)
 //
 //****************************************************************************
 
-void add_files_to_list(C8 *dirspec, //)   
+void add_files_to_list(C8 *dirspec,   
                        C8 *filespec,
                        S32 maxfiles)
 {
@@ -19481,7 +19481,7 @@ void CMD_edit_spur_level(void)
 //
 //****************************************************************************
 
-long FAR PASCAL WindowProc(HWND   hWnd,   UINT   message,   //)
+long FAR PASCAL WindowProc(HWND   hWnd,   UINT   message,
                            WPARAM wParam, LPARAM lParam)
 {
    if (GPIB_in_progress)
@@ -19887,7 +19887,7 @@ long FAR PASCAL WindowProc(HWND   hWnd,   UINT   message,   //)
 //
 //****************************************************************************
 
-int PASCAL WinMain(HINSTANCE hInst, //)
+int PASCAL WinMain(HINSTANCE hInst,
                    HINSTANCE hPrevInst,
                    LPSTR     lpCmdLine,     
                    int       nCmdShow)

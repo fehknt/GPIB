@@ -38,7 +38,7 @@ GPIBDEF bool   WINAPI GPIB_connect                 (S32        device_address,
                                                     S32        max_read_buffer_len    = 4096,    // >4K will not work with NI GPIB-232! 
                                                     S32        force_auto_read        = -1);     // -1 = use INI_force_auto_read setting
 
-GPIBDEF bool   WINAPI GPIB_connect_ex              (C8        *device_address,                   // alternate version that takes a full setup/address string 
+GPIBDEF bool   WINAPI GPIB_connect_ex              (C8        *device_address, 
                                                     GPIBERR    handler, 
                                                     bool       clear                  = 0, 
                                                     S32        timeout_msecs          = 100000,  // use -1 to disable timeout checks

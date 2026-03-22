@@ -8,12 +8,15 @@
 #ifndef SPECAN_H
 #define SPECAN_H
 
+#include <stdint.h>
 #include "typedefs.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
+typedef void (WINAPI *GPIBERR)(C8 *msg, S32 ibsta, S32 iberr, S32 ibcntl);
 
 #ifdef BUILDING_SPECAN
    #define SADEF __declspec(dllexport)
@@ -168,14 +171,15 @@ struct SA_STATE
 };
 
 SADEF SA_STATE * WINAPI  SA_startup            (void);
-SADEF void       WINAPI  SA_parse_command_line (C8 *command_line);
-SADEF bool       WINAPI  SA_connect            (S32 address);
-SADEF void       __cdecl SA_printf             (C8 *format, ...);
-SADEF C8 *       __cdecl SA_query              (C8 *format, ...);
-SADEF void       __cdecl SA_query_printf       (C8 *format, ...);
+SADEF void WINAPI SA_parse_command_line(C8 *command_line);
+SADEF bool WINAPI SA_connect(S32 device_address, C8 *command_line = 0, GPIBERR handler = 0);
+SADEF void WINAPI SA_shutdown(void);
+SADEF void __cdecl SA_printf(C8 *fmt, ...);
+SADEF C8 * __cdecl SA_query(C8 *fmt, ...);
+SADEF void __cdecl SA_query_printf(C8 *fmt, ...);
 SADEF void       WINAPI  SA_fetch_trace        (void);
 SADEF void       WINAPI  SA_disconnect         (bool final_exit = FALSE);
-SADEF void       WINAPI  SA_shutdown           (void);
+SADEF bool       WINAPI  SA_configure_sweep    (DOUBLE center_Hz, DOUBLE span_Hz, DOUBLE ref_level_dBm, DOUBLE rbw_Hz);
 
 //
 // Trace resampler

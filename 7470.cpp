@@ -815,7 +815,7 @@ void __cdecl GPIB_cmd_printf(C8 *fmt, ...)
 //
 //****************************************************************************
 
-bool read_856x(S32 address, //)
+bool read_856x(S32 address,
                C8 *filename)
 {
    alt_colors = TRUE;
@@ -840,7 +840,7 @@ bool read_856x(S32 address, //)
 //
 //****************************************************************************
 
-bool read_3577(S32 address, //)
+bool read_3577(S32 address,
                C8 *filename)
 {
    if (!CMD_listen(FALSE,
@@ -863,7 +863,7 @@ bool read_3577(S32 address, //)
 //
 //****************************************************************************
 
-bool read_8510(S32 address, //)
+bool read_8510(S32 address,
                C8 *filename)
 {
    alt_colors = FALSE;
@@ -909,7 +909,7 @@ bool read_8510(S32 address, //)
 //
 //****************************************************************************
 
-bool read_8753(S32 address, //)
+bool read_8753(S32 address,
                C8 *filename)
 {
    alt_colors = TRUE;
@@ -935,7 +935,7 @@ bool read_8753(S32 address, //)
 //
 //****************************************************************************
 
-bool read_3762AH(S32 address, //)
+bool read_3762AH(S32 address,
                  C8 *filename)
 {
    alt_colors = TRUE;
@@ -959,7 +959,7 @@ bool read_3762AH(S32 address, //)
 //
 //****************************************************************************
 
-bool read_3561A(S32 address, //)
+bool read_3561A(S32 address,
                 C8 *filename)
 {
    bool result = TRUE;
@@ -1043,7 +1043,7 @@ bool read_3561A(S32 address, //)
 //
 //****************************************************************************
 
-bool read_49x(C8 *ID,    //)
+bool read_49x(C8 *ID,
               S32 address, 
               C8 *filename)
 {
@@ -1145,7 +1145,7 @@ bool read_49x(C8 *ID,    //)
 //
 //****************************************************************************
 
-bool read_SCD(S32 address, //)
+bool read_SCD(S32 address,
                 C8 *filename)
 {
    bool result = TRUE;
@@ -1169,7 +1169,7 @@ bool read_SCD(S32 address, //)
 //
 //****************************************************************************
 
-bool read_271x(S32 address, //)
+bool read_271x(S32 address,
                  C8 *filename)
 {
    bool result = TRUE;
@@ -1233,7 +1233,7 @@ bool read_271x(S32 address, //)
 //
 //****************************************************************************
 
-bool read_2430(S32 address, //)
+bool read_2430(S32 address,
                  C8 *filename)
 {
    bool result = TRUE;
@@ -1304,7 +1304,7 @@ bool read_2430(S32 address, //)
 //
 //****************************************************************************
 
-bool read_223X(S32 address, //)
+bool read_223X(S32 address,
                  C8 *filename)
 {
    bool result = TRUE;
@@ -1346,7 +1346,7 @@ bool read_223X(S32 address, //)
 //
 //****************************************************************************
 
-bool read_TDS(S32 address, //)
+bool read_TDS(S32 address,
                 C8 *filename)
 {
    bool result = TRUE;
@@ -1389,7 +1389,7 @@ bool read_TDS(S32 address, //)
 //
 //****************************************************************************
 
-bool read_8566A_8568A(S32 address, //)
+bool read_8566A_8568A(S32 address,
                         C8 *filename)
 {
    alt_colors = FALSE;
@@ -1414,7 +1414,7 @@ bool read_8566A_8568A(S32 address, //)
 //
 //****************************************************************************
 
-bool read_278x(S32 address, //)
+bool read_278x(S32 address,
                C8 *filename)
 {
    alt_colors = FALSE;
@@ -1438,7 +1438,7 @@ bool read_278x(S32 address, //)
 //
 //****************************************************************************
 
-bool read_3585(S32 address, //)
+bool read_3585(S32 address,
                C8 *filename)
 {
    alt_colors = FALSE;
@@ -1462,7 +1462,7 @@ bool read_3585(S32 address, //)
 //
 //****************************************************************************
 
-bool read_492(S32 address, //)
+bool read_492(S32 address,
               C8 *filename)
 {
    alt_colors = FALSE;
@@ -1486,7 +1486,7 @@ bool read_492(S32 address, //)
 //
 //****************************************************************************
 
-bool read_70000(S32 address, //)
+bool read_70000(S32 address,
                 C8 *filename)
 {
    alt_colors = FALSE;
@@ -1510,7 +1510,7 @@ bool read_70000(S32 address, //)
 //
 //****************************************************************************
 
-bool read_SCPI(S32 address, //)
+bool read_SCPI(S32 address,
                 C8 *filename)
 {
    alt_colors = FALSE;
@@ -1536,7 +1536,7 @@ bool read_SCPI(S32 address, //)
 //
 //****************************************************************************
 
-bool read_54XXX(S32 address, //)
+bool read_54XXX(S32 address,
                 C8 *filename)
 {
    if (!CMD_listen(FALSE,
@@ -1558,7 +1558,7 @@ bool read_54XXX(S32 address, //)
 //
 //****************************************************************************
 
-bool read_instrument_data(S32      address, //)
+bool read_instrument_data(S32      address,
                           S32      optional_shortcut,
                           C8      *filename)
 {
@@ -2037,7 +2037,7 @@ bool CenterWindow(HWND hwndChild, HWND hwndParent)
 //*                                                                          *
 //****************************************************************************
 
-UINT CALLBACK SFNHookProc(HWND hdlg,      // handle to the dialog box window //)
+UINT CALLBACK SFNHookProc(HWND hdlg,      // handle to the dialog box window
                           UINT uiMsg,     // message identifier
                           WPARAM wParam,  // message parameter
                           LPARAM lParam)  // message parameter
@@ -2061,7 +2061,7 @@ UINT CALLBACK SFNHookProc(HWND hdlg,      // handle to the dialog box window //)
 //*                                                                          *
 //****************************************************************************
 
-UINT CALLBACK OFNHookProc(HWND hdlg,      // handle to the dialog box window //)
+UINT CALLBACK OFNHookProc(HWND hdlg,      // handle to the dialog box window
                           UINT uiMsg,     // message identifier
                           WPARAM wParam,  // message parameter
                           LPARAM lParam)  // message parameter
@@ -2414,7 +2414,7 @@ bool get_load_filename(C8 *string)
 //*
 //****************************************************************************
 
-UINT_PTR CALLBACK PrintHookProc(HWND hdlg,      // handle to the dialog box window //)
+UINT_PTR CALLBACK PrintHookProc(HWND hdlg,      // handle to the dialog box window
                                 UINT uiMsg,     // message identifier
                                 WPARAM wParam,  // message parameter
                                 LPARAM lParam)  // message parameter
@@ -2983,7 +2983,7 @@ C8 *find_last_caption(C8 *plot_data)
    return caption;
 }
 
-void render_file(C8    *input_filename, //)
+void render_file(C8    *input_filename,
                  S32    pen1_color,
                  S32    default_pen_color,
                  S32    text_color,
@@ -3972,7 +3972,7 @@ C8 *synthesize_492P(S32 device_address)
 #define YDEV(y)   ((SINGLE(y) * 8.426F) + 844.0F)
 #define APPEND    (&trace_buffer[strlen(trace_buffer)])
 
-C8 *synthesize_856xA(S32  device_address, //)
+C8 *synthesize_856xA(S32  device_address,
                      bool is_278X)
 {
    S32 i,c;
@@ -5118,7 +5118,7 @@ C8 *synthesize_generic_SA(S32 device_address, bool SCPI)
 //
 //****************************************************************************
 
-C8 *async_read(S32   plotter_address, //)
+C8 *async_read(S32   plotter_address,
                bool  refresh_display           = TRUE,
                S32   device_address            = -1,
                C8   *device_command            = NULL,
@@ -6329,7 +6329,7 @@ void CMD_acquire(S32      GPIB_address,     // 0 = nonaddressable serial adapter
 //
 //****************************************************************************
 
-bool CMD_listen(bool  auto_print, //)
+bool CMD_listen(bool  auto_print,
                 S32   plotter_address,
                 C8   *explicit_filename,
                 S32   device_address,       // Must be -1 to make device-initiated plots non-refreshable!
@@ -6512,7 +6512,7 @@ void CMD_about(void)
 //
 //****************************************************************************
 
-long FAR PASCAL WindowProc(HWND   hWnd,   UINT   message,   //)
+long FAR PASCAL WindowProc(HWND   hWnd,   UINT   message,
                            WPARAM wParam, LPARAM lParam)
 {
    if (GPIB_polling)
@@ -6833,7 +6833,7 @@ long FAR PASCAL WindowProc(HWND   hWnd,   UINT   message,   //)
 //
 //****************************************************************************
 
-int PASCAL WinMain(HINSTANCE hInst, //)
+int PASCAL WinMain(HINSTANCE hInst,
                    HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine,
                    int nCmdShow)

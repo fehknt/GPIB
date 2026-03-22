@@ -61,7 +61,7 @@
 // 
 //############################################################################
 
-static S32 update_file (int      write_file, //)
+static S32 update_file (int      write_file,
                         SINGLE   top_cursor_dBm,
                         SINGLE   bottom_cursor_dBm,
                         S32      n_palette_entries,
@@ -106,7 +106,7 @@ static S32 update_file (int      write_file, //)
 //
 //############################################################################
 
-S32 update_physical_file (C8      *filename, //)
+S32 update_physical_file (C8      *filename,
                           SINGLE   top_cursor_dBm,
                           SINGLE   bottom_cursor_dBm,
                           S32      n_palette_entries,
@@ -169,7 +169,7 @@ RECORDER::~RECORDER()
 //
 //############################################################################
 
-S32 RECORDER::open_writable_file(C8      *filename, //)
+S32 RECORDER::open_writable_file(C8      *filename,
                                  S32      input_width,
                                  DOUBLE   freq_start,
                                  DOUBLE   freq_end,
@@ -391,7 +391,7 @@ S32 RECORDER::open_writable_file(C8      *filename, //)
 //
 //############################################################################
 
-S32 RECORDER::open_readable_file(C8      *filename, //)
+S32 RECORDER::open_readable_file(C8      *filename,
                                  S32     *version,
                                  DOUBLE  *freq_start,
                                  DOUBLE  *freq_stop,
@@ -675,7 +675,7 @@ S32 RECORDER::open_readable_file(C8      *filename, //)
 //
 //############################################################################
 
-void RECORDER::close_writable_file(SINGLE   top_cursor_dBm, //)
+void RECORDER::close_writable_file(SINGLE   top_cursor_dBm,
                                    SINGLE   bottom_cursor_dBm,
                                    S32      n_palette_entries,
                                    VFX_RGB *palette)
@@ -840,7 +840,7 @@ S32 RECORDER::write_record       (time_t timestamp,
 //
 //############################################################################
 
-void RECORDER::set_single_point  (SINGLE val,  //)
+void RECORDER::set_single_point  (SINGLE val,
                                   S32    X)
 {                  
    if (write_file == -1)
@@ -857,7 +857,7 @@ void RECORDER::set_single_point  (SINGLE val,  //)
 //
 //############################################################################
 
-void RECORDER::set_arrayed_points(SINGLE *val,  //)
+void RECORDER::set_arrayed_points(SINGLE *val,
                                   S32     first_X, 
                                   S32     last_X, 
                                   S32    *explicit_X)
@@ -899,7 +899,7 @@ void RECORDER::set_arrayed_points(SINGLE *val,  //)
 //
 //############################################################################
 
-time_t RECORDER::read_record(SINGLE *dest, //)
+time_t RECORDER::read_record(SINGLE *dest,
                              S32     read_position,
                              DOUBLE *latitude,
                              DOUBLE *longitude,

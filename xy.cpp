@@ -470,7 +470,7 @@ S32 XY::set_input_width(S32 _n_points)
 //
 //############################################################################
 
-void XY::set_Y_range(SINGLE _top_val,  //)
+void XY::set_Y_range(SINGLE _top_val, 
                      SINGLE _bottom_val, 
                      C8    *_format,
                      SINGLE _major_tic_increment,
@@ -543,7 +543,7 @@ void XY::set_Y_range(SINGLE _top_val,  //)
 //
 //############################################################################
 
-void XY::set_Y_cursors(SINGLE _top_cursor_val,  //)
+void XY::set_Y_cursors(SINGLE _top_cursor_val, 
                        SINGLE _bottom_cursor_val)
 {
    thresh_y0 = 0;
@@ -578,7 +578,7 @@ void XY::set_Y_cursors(SINGLE _top_cursor_val,  //)
 //
 //############################################################################
 
-void XY::set_X_range(DOUBLE _left_val,  //)
+void XY::set_X_range(DOUBLE _left_val, 
                      DOUBLE _right_val, 
                      C8    *_format,
                      DOUBLE _major_tic_increment,
@@ -649,7 +649,7 @@ void XY::set_X_range(DOUBLE _left_val,  //)
 //
 //############################################################################
 
-void XY::set_X_cursors(DOUBLE _left_cursor_val, //)
+void XY::set_X_cursors(DOUBLE _left_cursor_val,
                        DOUBLE _right_cursor_val)
 {
    zoom_x0 = 0;
@@ -687,7 +687,7 @@ void XY::set_X_cursors(DOUBLE _left_cursor_val, //)
 //
 //############################################################################
 
-void XY::set_single_point  (SINGLE val, //)
+void XY::set_single_point  (SINGLE val, 
                             S32    X)
 {
    input_array[X] = val;
@@ -767,7 +767,7 @@ void XY::set_arrayed_points(SINGLE *val,
 //
 //############################################################################
 
-void XY::set_graph_attributes(XY_GRAPHSTYLE _style, //)
+void XY::set_graph_attributes(XY_GRAPHSTYLE _style, 
                               S32           _merge_op,
                               S32           _accum_op,
                               S32           _max_hold,
@@ -1228,7 +1228,7 @@ DOUBLE XY::right_cursor_val(void)
 //
 //############################################################################
 
-void XY::update_cursors(S32 mouse_x, //)
+void XY::update_cursors(S32 mouse_x,
                         S32 mouse_y, 
                         S32 button_state)
 {
@@ -1668,7 +1668,7 @@ static void __cdecl scale_shader(S32 x, S32 y)
    last_sy = sy;
 }
 
-void XY::draw_scale(S32   grat_x,  //)
+void XY::draw_scale(S32   grat_x,
                     S32   grat_y)
 {
    C8 *s;
@@ -2068,7 +2068,7 @@ SINGLE *XY::get_graph_data(XY_DATAREQ stage)
 //
 //############################################################################
 
-SINGLE XY::query_graph(S32        x, //)
+SINGLE XY::query_graph(S32        x,
                        S32        y,
                        XY_DATAREQ stage,
                        SINGLE    *vertical_value,

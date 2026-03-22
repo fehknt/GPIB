@@ -543,7 +543,7 @@ BOOL CenterWindow(HWND hwndChild, HWND hwndParent)
 //*                                                                          *
 //****************************************************************************
 
-UINT CALLBACK SFNHookProc(HWND hdlg,      // handle to the dialog box window //)
+UINT CALLBACK SFNHookProc(HWND hdlg,      // handle to the dialog box window
                           UINT uiMsg,     // message identifier
                           WPARAM wParam,  // message parameter
                           LPARAM lParam)  // message parameter
@@ -567,7 +567,7 @@ UINT CALLBACK SFNHookProc(HWND hdlg,      // handle to the dialog box window //)
 //*                                                                          *
 //****************************************************************************
 
-UINT CALLBACK OFNHookProc(HWND hdlg,      // handle to the dialog box window //)
+UINT CALLBACK OFNHookProc(HWND hdlg,      // handle to the dialog box window
                           UINT uiMsg,     // message identifier
                           WPARAM wParam,  // message parameter
                           LPARAM lParam)  // message parameter
@@ -1183,7 +1183,7 @@ BOOL PrintBackBufferToDC(void)
 // 
 //****************************************************************************
 
-static S32 string_width(C8       *string, //)
+static S32 string_width(C8       *string,
                         VFX_FONT *font)
 {
    S32 w = 0;
@@ -1629,7 +1629,7 @@ void update_mouse_vars(void)
 //
 //****************************************************************************
 
-long FAR PASCAL WindowProc(HWND   hWnd,   UINT   message,   //)
+long FAR PASCAL WindowProc(HWND   hWnd,   UINT   message,
                            WPARAM wParam, LPARAM lParam)
 {
    switch (message)
@@ -2114,7 +2114,7 @@ void AppMain(LPSTR _lpCmdLine)
 //
 //****************************************************************************
 
-int PASCAL WinMain(HINSTANCE hInst, //)
+int PASCAL WinMain(HINSTANCE hInst,
                    HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine,     
                    int nCmdShow)

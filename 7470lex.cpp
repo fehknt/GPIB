@@ -472,7 +472,7 @@ C8 *fetch_text(S32 terminator=3)
 //*                                                                          *
 //****************************************************************************
 
-void * FILE_read (C8     *filename, //)     
+void * FILE_read (C8     *filename,     
                   S32    *len_dest     = NULL,
                   void   *dest         = NULL,
                   S32     len          = -1,

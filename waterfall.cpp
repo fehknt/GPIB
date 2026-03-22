@@ -510,7 +510,7 @@ void WATERFALL::set_graph_colors    (VFX_RGB *_color_array,
       }
 }
 
-void WATERFALL::set_graph_attributes(S32      _cell_height, //)
+void WATERFALL::set_graph_attributes(S32      _cell_height, 
                                      SINGLE  *_value_array,
                                      VFX_RGB *_color_array,
                                      S32      _n_entries,
@@ -816,7 +816,7 @@ void WATERFALL::scroll_graph(S32 scroll_offset)
 //
 //############################################################################
 
-S32 WATERFALL::query_graph(S32      x,  //)
+S32 WATERFALL::query_graph(S32      x, 
                            S32      y,
                            time_t  *acquisition_time,
                            SINGLE  *value,
@@ -943,7 +943,7 @@ S32 WATERFALL::query_graph(S32      x,  //)
 //
 //############################################################################
 
-void WATERFALL::draw_fixed_point_graph_row(time_t acquisition_time, //)
+void WATERFALL::draw_fixed_point_graph_row(time_t acquisition_time, 
                                            S32   *data,
                                            S32    row,
                                            BOOL   smooth_mode,
@@ -1084,7 +1084,7 @@ void WATERFALL::draw_fixed_point_graph_row(time_t acquisition_time, //)
 //
 //############################################################################
 
-void WATERFALL::draw_graph_row(time_t  acquisition_time, //)
+void WATERFALL::draw_graph_row(time_t  acquisition_time, 
                                SINGLE *data,
                                S32     row,
                                BOOL    smooth_mode,
@@ -1201,7 +1201,7 @@ void WATERFALL::draw_graph_row(time_t  acquisition_time, //)
 //
 //############################################################################
 
-S32 WATERFALL::draw_scale(S32 hit_x, //)
+S32 WATERFALL::draw_scale(S32 hit_x, 
                           S32 hit_y)
 {
    if (step_CLUT == NULL)
