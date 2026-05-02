@@ -4,7 +4,7 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat\" x86 && nmake /A /f Makefile",
+            "command": "\"C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Auxiliary\\Build\\vcvarsall.bat\" x86 && nmake /A /f Makefile",
             "options": {
                 "shell": {
                     "executable": "cmd.exe",
@@ -24,9 +24,28 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "cmake build",
+            "type": "shell",
+            "command": "\"C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Auxiliary\\Build\\vcvarsall.bat\" x86 && cmake -B build -G \"NMake Makefiles\" && cmake --build build",
+            "options": {
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/c"
+                    ]
+                }
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "clean",
             "type": "shell",
-            "command": "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Auxiliary\\Build\\vcvarsall.bat\" x86 && nmake clean",
+            "command": "\"C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Auxiliary\\Build\\vcvarsall.bat\" x86 && nmake clean",
             "options": {
                 "shell": {
                     "executable": "cmd.exe",

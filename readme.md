@@ -21,6 +21,21 @@ John Miles, KE5FX
 
 ---
 
+## Building from Source
+
+This repository uses **CMake** to generate build files. The legacy `makefile` has been deprecated.
+
+To compile the toolkit, open a Developer Command Prompt or PowerShell, and execute the following commands from the repository root to configure and build the 32-bit executables:
+
+```powershell
+cmake -B build -S . -A Win32
+cmake --build build --config Release
+```
+
+All compiled binaries, DLLs, and testing executables will automatically be output into the `bin/` directory. In addition, the build process will automatically copy `default_connect.ini` into the `bin/` folder (if it does not already exist) so the tools are ready to run right out of the box!
+
+---
+
 ## 7470
 
 7470.EXE is a Win32-based emulator for the HP 7470A plotter. See its [User Guide](./7470.htm) for more information.

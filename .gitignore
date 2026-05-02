@@ -7,8 +7,38 @@
 **/*.res
 **/*.ssm
 **/*.plt
-bin/gnss.dll
-bin/specan.dll
-bin/gpiblib.dll
-build.bat
-nmake.log
+**/*.dll
+
+# Build and IDE directories
+build/
+bin/
+.vs/
+.vscode/
+
+# CMake artifacts
+CMakeCache.txt
+CMakeFiles/
+*.cmake
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+
+# MSVC artifacts
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.ilk
+*.suo
+*.user
+
+# GTest artifacts
+**/cmake_test_discovery_*.json
+
+# Test outputs
+test_out*.txt
+test_output*.txt
+ctest_specan*.txt
+
+# Agent state and planning
+agent state/
