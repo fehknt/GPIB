@@ -13,8 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    # -A Win32 is required: the toolkit is 32-bit (x86 inline __asm in
+    # waterfall.cpp, and the vendored winvfx16/w32sal/sh_api/agvisa libs are
+    # x86).  Without it the VS generator defaults to x64 and the build fails.
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release
+      run: cmake -B ${{github.workspace}}/build -S ${{github.workspace}} -A Win32
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config Release
