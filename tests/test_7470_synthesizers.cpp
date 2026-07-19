@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#define BUILDING_GPIBLIB
-#define BUILDING_SPECAN
+// BUILDING_GPIBLIB / BUILDING_SPECAN come from gpib_common's PUBLIC compile
+// definitions; defining them here too just produces C4005
 
 #include "typedefs.h"
 #include "gpiblib.h"
