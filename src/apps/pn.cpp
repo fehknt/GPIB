@@ -14124,6 +14124,7 @@ BOOL get_save_filename(C8 *string)
 
    fn.lpstrFilter       = "\
 Noise plot files (*.PNP)\0*.PNP\0\
+Image files (*.PNG)\0*.PNG\0\
 Image files (*.GIF)\0*.GIF\0\
 Image files (*.TGA)\0*.TGA\0\
 Image files (*.BMP)\0*.BMP\0\
@@ -17373,6 +17374,14 @@ void CMD_save(C8 *explicit_save_filename)
       if (!_stricmp(suffix,".tga"))
          {
          TGA_write_16bpp(image, buffer);
+         }
+      else if (!_stricmp(suffix,".png"))
+         {
+         if (!PNG_write_16bpp(image, buffer))
+            {
+            SAL_alert_box("Error","Could not write PNG file %s\n"
+                                  "(PNG encoding requires GDI+)", buffer);
+            }
          }
       else if (!_stricmp(suffix,".gif"))
          {

@@ -3240,3 +3240,156 @@ bool  PCX_write_16bpp  (PANE *src,
    free(data);
    return 1;
 }
+
+/***************************************************************************/
+//
+// PNG writer
+//
+// PNG needs a deflate stream, and there's no compression library in this
+// tree.  Rather than hand-rolling one, hand the pixels to GDI+, which every
+// supported version of Windows ships and which produces a properly compressed
+// file.  GDI+ is loaded at run time with GetProcAddress -- the same approach
+// gpiblib.cpp uses for VISA -- so nothing new appears on the link line and a
+// machine without gdiplus.dll just fails the save instead of failing to start.
+//
+/***************************************************************************/
+
+//
+// Minimal subset of the GDI+ flat API.  Declared here so we don't have to
+// pull in <gdiplus.h>, which is C++-only and fights with NOMINMAX.
+//
+
+struct GDIPLUS_STARTUP_INPUT
+{
+   U32   GdiplusVersion;
+   void *DebugEventCallback;
+   BOOL  SuppressBackgroundThread;
+   BOOL  SuppressExternalCodecs;
+};
+
+typedef S32  (WINAPI *P_GdiplusStartup)            (ULONG_PTR *token, const GDIPLUS_STARTUP_INPUT *input, void *output);
+typedef void (WINAPI *P_GdiplusShutdown)           (ULONG_PTR token);
+typedef S32  (WINAPI *P_GdipCreateBitmapFromScan0) (S32 width, S32 height, S32 stride, S32 format, U8 *scan0, void **bitmap);
+typedef S32  (WINAPI *P_GdipSaveImageToFile)       (void *image, const WCHAR *filename, const GUID *encoder, const void *params);
+typedef S32  (WINAPI *P_GdipDisposeImage)          (void *image);
+
+#define GDIP_PIXELFORMAT_24BPP_RGB 0x00021808      // PixelFormat24bppRGB
+#define GDIP_OK                    0               // Gdiplus::Ok
+
+bool PNG_write_16bpp(PANE *src,
+                     C8   *filename)
+{
+   //
+   // Get pane dimensions
+   //
+
+   S32 width  = 0;
+   S32 height = 0;
+   PANE_DIMS(src, width, height)
+
+   if ((width <= 0) || (height <= 0))
+      {
+      return FALSE;
+      }
+
+   //
+   // Resolve the GDI+ entry points we need
+   //
+
+   HMODULE hGDIplus = LoadLibrary("gdiplus.dll");
+
+   if (hGDIplus == NULL)
+      {
+      return FALSE;
+      }
+
+   P_GdiplusStartup            p_startup  = (P_GdiplusStartup)            GetProcAddress(hGDIplus, "GdiplusStartup");
+   P_GdiplusShutdown           p_shutdown = (P_GdiplusShutdown)           GetProcAddress(hGDIplus, "GdiplusShutdown");
+   P_GdipCreateBitmapFromScan0 p_create   = (P_GdipCreateBitmapFromScan0) GetProcAddress(hGDIplus, "GdipCreateBitmapFromScan0");
+   P_GdipSaveImageToFile       p_save     = (P_GdipSaveImageToFile)       GetProcAddress(hGDIplus, "GdipSaveImageToFile");
+   P_GdipDisposeImage          p_dispose  = (P_GdipDisposeImage)          GetProcAddress(hGDIplus, "GdipDisposeImage");
+
+   if ((p_startup == NULL) || (p_shutdown == NULL) || (p_create == NULL) ||
+       (p_save    == NULL) || (p_dispose  == NULL))
+      {
+      FreeLibrary(hGDIplus);
+      return FALSE;
+      }
+
+   //
+   // Copy the pane into a top-down 24-bpp BGR buffer.  GDI+ picks the PNG
+   // color type from the pixel format it's given, so 24bpp keeps these opaque
+   // screenshots out of RGBA and saves the useless alpha channel.  Rows are
+   // padded to a 4-byte boundary, as GDI+ requires
+   //
+
+   S32 stride  = ((width * 3) + 3) & ~3;
+   S32 remnant = stride - (width * 3);
+
+   U8 *bits = (U8 *) malloc(stride * height);
+
+   if (bits == NULL)
+      {
+      FreeLibrary(hGDIplus);
+      return FALSE;
+      }
+
+   U8 *dest = bits;
+
+   for (S32 y=0; y < height; y++)
+      {
+      for (S32 x=0; x < width; x++)
+         {
+         VFX_RGB *RGB = VFX_RGB_value(VFX_pixel_read(src, x, y));
+
+         *dest++ = (U8) RGB->b;
+         *dest++ = (U8) RGB->g;
+         *dest++ = (U8) RGB->r;
+         }
+
+      for (S32 i=0; i < remnant; i++)
+         {
+         *dest++ = 0;
+         }
+      }
+
+   //
+   // Hand it to the PNG encoder
+   //
+
+   GDIPLUS_STARTUP_INPUT startup_input;
+   memset(&startup_input, 0, sizeof(startup_input));
+   startup_input.GdiplusVersion = 1;
+
+   ULONG_PTR token = 0;
+   bool      result = FALSE;
+
+   if (p_startup(&token, &startup_input, NULL) == GDIP_OK)
+      {
+      void *bitmap = NULL;
+
+      if ((p_create(width, height, stride, GDIP_PIXELFORMAT_24BPP_RGB, bits, &bitmap) == GDIP_OK) &&
+          (bitmap != NULL))
+         {
+         // {557CF406-1A04-11D3-9A73-0000F81EF32E} -- the built-in PNG encoder
+         static const GUID PNG_encoder_CLSID =
+            { 0x557cf406, 0x1a04, 0x11d3, { 0x9a, 0x73, 0x00, 0x00, 0xf8, 0x1e, 0xf3, 0x2e } };
+
+         WCHAR wide_name[MAX_PATH];
+
+         if (MultiByteToWideChar(CP_ACP, 0, filename, -1, wide_name, MAX_PATH) > 0)
+            {
+            result = (p_save(bitmap, wide_name, &PNG_encoder_CLSID, NULL) == GDIP_OK);
+            }
+
+         p_dispose(bitmap);
+         }
+
+      p_shutdown(token);
+      }
+
+   free(bits);
+   FreeLibrary(hGDIplus);
+
+   return result;
+}

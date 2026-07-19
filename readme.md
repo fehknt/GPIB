@@ -47,14 +47,14 @@ In addition to running interactively, 7470 can acquire a single plot and save it
 ```
 7470 -acquire:18 -out:trace.plt          Auto-detect the instrument at GPIB 18
                                          with an ID? query and save its HP-GL/2
-7470 -acquire:18 -out:trace.gif          Save the rendered image instead
+7470 -acquire:18 -out:trace.png          Save the rendered image instead
 7470 -instrument:8566A -out:trace.plt    Use a named 7470.ini instrument_n entry
                                          (needed for the models that can't be
                                          auto-detected, such as the HP-GL/2
                                          emulation shortcuts)
 ```
 
-`-out` accepts `.plt`/`.hgl`/`.hpg`/`.pgl` to save the HP-GL/2 data exactly as received, or `.gif`/`.bmp`/`.pcx`/`.tga` to save the rendered image at the current display resolution. Exit status is 0 if the plot was acquired and saved, 1 otherwise. A GPIB failure is reported on stderr rather than in a message box.
+`-out` accepts `.plt`/`.hgl`/`.hpg`/`.pgl` to save the HP-GL/2 data exactly as received, or `.png`/`.gif`/`.bmp`/`.pcx`/`.tga` to save the rendered image at the current display resolution. Exit status is 0 if the plot was acquired and saved, 1 otherwise. A GPIB failure is reported on stderr rather than in a message box.
 
 A bare GPIB address on the command line (`7470 18`) acquires from that address at startup and stays interactive. It auto-detects the instrument with an ID? query; to bind an address to a specific `instrument_n` entry from 7470.ini, use `-acquire:18 -instrument:<text>`.
 

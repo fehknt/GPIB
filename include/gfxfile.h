@@ -17,6 +17,7 @@ bool      TGA_write_16bpp  (PANE *src, C8 *filename);
 bool      GIF_write_16bpp  (PANE *src, C8 *filename);
 bool      BMP_write_16bpp  (PANE *src, C8 *filename);
 bool      PCX_write_16bpp  (PANE *src, C8 *filename);
+bool      PNG_write_16bpp  (PANE *src, C8 *filename);   // encodes via GDI+, loaded at run time
 
 #ifdef WINVFX_H
    #define WINVFX

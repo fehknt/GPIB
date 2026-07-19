@@ -1774,6 +1774,7 @@ bool get_screenshot_filename(C8 *string)
 
    fn.lpstrFilter       = "\
 Image files (*.BMP)\0*.BMP\0\
+Image files (*.PNG)\0*.PNG\0\
 Image files (*.GIF)\0*.GIF\0\
 Image files (*.TGA)\0*.TGA\0\
 Image files (*.PCX)\0*.PCX\0\
@@ -4454,6 +4455,14 @@ select_screenshot:
                if (!_stricmp(suffix,".tga"))
                   {
                   TGA_write_16bpp(stage_pane, FileName);
+                  }
+               else if (!_stricmp(suffix,".png"))
+                  {
+                  if (!PNG_write_16bpp(stage_pane, FileName))
+                     {
+                     SAL_alert_box("Error","Could not write PNG file %s\n"
+                                           "(PNG encoding requires GDI+)", FileName);
+                     }
                   }
                else if (!_stricmp(suffix,".gif"))
                   {

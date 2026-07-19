@@ -2246,6 +2246,7 @@ bool get_save_filename(C8 *string)
       HP-GL/2 data files (*.HGL)\0*.HGL\0\
       HP-GL/2 data files (*.PGL)\0*.PGL\0\
       HP-GL/2 data files (*.PCL)\0*.PCL\0\
+      Image files (*.PNG)\0*.PNG\0\
       Image files (*.GIF)\0*.GIF\0\
       Image files (*.TGA)\0*.TGA\0\
       Image files (*.BMP)\0*.BMP\0\
@@ -2257,6 +2258,7 @@ bool get_save_filename(C8 *string)
       HP-GL/2 data files (*.HPG)\0*.HPG\0\
       HP-GL/2 data files (*.HGL)\0*.HGL\0\
       HP-GL/2 data files (*.PGL)\0*.PGL\0\
+      Image files (*.PNG)\0*.PNG\0\
       Image files (*.GIF)\0*.GIF\0\
       Image files (*.TGA)\0*.TGA\0\
       Image files (*.BMP)\0*.BMP\0\
@@ -4260,6 +4262,21 @@ void CMD_save(C8 *explicit_save_filename)
          {
          TGA_write_16bpp(image, new_name);
          }
+      else if (!_stricmp(suffix,".png"))
+         {
+         if (!PNG_write_16bpp(image, new_name))
+            {
+            if (CL_headless)
+               {
+               fprintf(stderr, "Error: could not write PNG file %s\n", new_name);
+               }
+            else
+               {
+               SAL_alert_box("Error","Could not write PNG file %s\n"
+                                     "(PNG encoding requires GDI+)", new_name);
+               }
+            }
+         }
       else if (!_stricmp(suffix,".gif"))
          {
          GIF_write_16bpp(image, new_name);
@@ -5306,8 +5323,8 @@ static void show_usage(void)
           "                      -instrument:\"8566A\" for HP-GL/2 emulation\n"
           "  -out:<filename>     Save the acquired plot to <filename> and exit.\n"
           "                      .plt/.hgl/.hpg/.pgl saves the HP-GL/2 data as\n"
-          "                      received; .gif/.bmp/.pcx/.tga saves the rendered\n"
-          "                      image at the current display resolution\n"
+          "                      received; .png/.gif/.bmp/.pcx/.tga saves the\n"
+          "                      rendered image at the current display resolution\n"
           "  -exit               Exit when the acquisition finishes, with or without\n"
           "                      -out\n"
           "  -?, -help           Show this text\n"
@@ -5317,7 +5334,7 @@ static void show_usage(void)
           "Examples:\n"
           "\n"
           "  7470 -acquire:18 -out:trace.plt\n"
-          "  7470 -acquire:18 -out:trace.gif\n"
+          "  7470 -acquire:18 -out:trace.png\n"
           "  7470 -instrument:8566A -out:trace.plt\n"
           "\n", szAppName);
 }
@@ -5586,7 +5603,7 @@ static S32 CL_acquire_and_save(void)
       if (strrchr(CL_out_filename, '.') == NULL)
          {
          fprintf(stderr, "Error: -out filename '%s' needs an extension "
-                         "(.plt/.hgl/.hpg/.pgl, or .gif/.bmp/.pcx/.tga)\n",
+                         "(.plt/.hgl/.hpg/.pgl, or .png/.gif/.bmp/.pcx/.tga)\n",
             CL_out_filename);
          return 1;
          }
