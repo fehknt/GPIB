@@ -63,6 +63,12 @@ protected:
         config.async_timeout = 1000;
         config.async_xfer_size = 1024;
         config.min_plot_bytes = 10;
+
+        GPIB_clear_error();     // the latch is global state -- don't leak it between tests
+    }
+
+    void TearDown() override {
+        GPIB_clear_error();
     }
 };
 
@@ -122,4 +128,75 @@ TEST_F(PlotterLogicTest, AbortHandling) {
     char* result = logic.AsyncRead(30, TRUE, 1, NULL, FALSE, TRUE);
 
     EXPECT_EQ(result, nullptr);
+}
+
+//
+// Non-fatal GPIB error handling.  Before this, GPIB_error() called exit(1),
+// so pointing an acquisition at an instrument that couldn't answer took the
+// whole program down along with any plot already on screen.
+//
+
+TEST_F(PlotterLogicTest, ErrorLatchKeepsFirstMessage) {
+    EXPECT_EQ(GPIB_error_pending, 0);
+
+    GPIB_error((C8*)"viRead_ASC Error: 0xBFFF0015", 0, 0, 0);
+    GPIB_error((C8*)"a later error caused by the first one", 0, 0, 0);
+
+    EXPECT_EQ(GPIB_error_pending, 1);
+    EXPECT_STREQ(GPIB_error_text, "viRead_ASC Error: 0xBFFF0015");
+
+    GPIB_clear_error();
+
+    EXPECT_EQ(GPIB_error_pending, 0);
+    EXPECT_STREQ(GPIB_error_text, "");
+}
+
+TEST_F(PlotterLogicTest, ErrorLatchToleratesNullMessage) {
+    GPIB_error(NULL, 0, 0, 0);
+
+    EXPECT_EQ(GPIB_error_pending, 1);
+    EXPECT_GT(strlen(GPIB_error_text), 0u);
+}
+
+TEST_F(PlotterLogicTest, FailedConnectStopsPollingImmediately) {
+    // A connect that fails latches an error, and there's no point waiting
+    // around for data that will never arrive
+    EXPECT_CALL(gpib, Connect(_, _, _, _))
+        .WillOnce(::testing::InvokeWithoutArgs(
+            []() { GPIB_error((C8*)"Could not open VISA resource", 0, 0, 0); }));
+
+    EXPECT_CALL(gpib, IsAborted()).WillRepeatedly(Return(false));
+    EXPECT_CALL(gpib, ReadASC(_, _)).Times(0);
+
+    PlotterLogic logic(&gpib, &ui, config);
+    char* result = logic.AsyncRead(30, TRUE, 1, NULL, FALSE, TRUE);
+
+    EXPECT_EQ(result, nullptr);
+    EXPECT_EQ(GPIB_error_pending, 1);
+}
+
+TEST_F(PlotterLogicTest, ErrorDiscardsPartiallyReceivedPlot) {
+    // Enough bytes arrive to satisfy min_plot_bytes, then the read fails.  The
+    // partial plot must be thrown away rather than rendered as a truncated
+    // trace over the good one the user already had
+    EXPECT_CALL(gpib, Connect(_, _, _, _));
+
+    {
+        InSequence s;
+        EXPECT_CALL(gpib, ReadASC(_, _)).WillOnce(Return("PA0,0;PD;PA100,100;"));
+        EXPECT_CALL(gpib, ReadASC(_, _)).WillRepeatedly(::testing::InvokeWithoutArgs([]() {
+            GPIB_error((C8*)"viRead_ASC Error: 0xBFFF0015", 0, 0, 0);
+            return (const char*)"";
+        }));
+    }
+
+    EXPECT_CALL(gpib, IsAborted()).WillRepeatedly(Return(false));
+
+    config.async_timeout = 100;
+
+    PlotterLogic logic(&gpib, &ui, config);
+    char* result = logic.AsyncRead(30, TRUE, 1, NULL, FALSE, TRUE);
+
+    EXPECT_EQ(result, nullptr);
+    EXPECT_EQ(GPIB_error_pending, 1);
 }

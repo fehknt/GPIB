@@ -8,6 +8,33 @@
 
 char PlotterLogic::m_contents[4194304];
 
+//
+// Non-fatal GPIB error latch -- see the comment in 7470_logic.h
+//
+
+S32 GPIB_error_pending = 0;
+C8  GPIB_error_text[2048] = "";
+
+void WINAPI GPIB_error(C8 *msg, S32 ibsta, S32 iberr, S32 ibcntl) {
+    if (GPIB_error_pending) {
+        return;             // keep the first error; the ones that follow are usually fallout
+    }
+
+    GPIB_error_pending = 1;
+
+    _snprintf(GPIB_error_text,
+              sizeof(GPIB_error_text) - 1,
+              "%s",
+              (msg != NULL) ? msg : "Unspecified GPIB error");
+
+    GPIB_error_text[sizeof(GPIB_error_text) - 1] = 0;
+}
+
+void GPIB_clear_error(void) {
+    GPIB_error_pending = 0;
+    GPIB_error_text[0] = 0;
+}
+
 PlotterLogic::PlotterLogic(IGPIBInterface* gpib, IPlotterUI* ui, const PlotterConfig& config)
     : m_gpib(gpib), m_ui(ui), m_config(config) {
 }
@@ -93,7 +120,9 @@ GPIB_wait:
 
         m_ui->ServeMessageQueue();
 
-        if (m_gpib->IsAborted()) {
+        // A latched GPIB error means the connect or a write failed outright;
+        // there's no point polling for data that will never arrive
+        if ((m_gpib->IsAborted()) || (GPIB_error_pending)) {
             goto GPIB_done;
         }
 
@@ -176,6 +205,7 @@ GPIB_plot_received:
     }
 
 GPIB_done:
+    if (GPIB_error_pending) return NULL;   // discard whatever partial plot we collected
     if (read_complete) return m_contents;
     return NULL;
 }

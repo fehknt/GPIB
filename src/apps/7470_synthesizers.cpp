@@ -16,6 +16,13 @@
 #include "w32sal.h"
 #include "7470_synthesizers.h"
 
+// Non-fatal GPIB error latch.  These synthesizers talk to the instrument with
+// report_timeout=TRUE, so pointing an HP-GL/2 emulation shortcut at an
+// analyzer that doesn't speak the expected dialect (e.g. an 8593EM asked for
+// an 8566A "OL"/"OT" dump) lands in GPIB_error().  Bail out on a set latch and
+// let the caller keep the previous trace on screen.
+#include "7470_logic.h"
+
 // Externs from 7470.cpp or other modules
 extern void __cdecl GPIB_print(C8 *fmt, ...);
 extern S32 INI_ignore_write_aborts;
@@ -165,9 +172,9 @@ C8 *synthesize_492P(S32 device_address)
 #define APPEND (&synthesis_buffer[strlen(synthesis_buffer)])
    SA_STATE *SA = SA_startup();
 
-   SA_parse_command_line("-t");  
+   SA_parse_command_line("-t");
 
-   if (!SA_connect(device_address))
+   if ((!SA_connect(device_address, NULL, GPIB_error)) || (GPIB_error_pending))
       {
       SA_shutdown();
       return NULL;
@@ -178,6 +185,12 @@ C8 *synthesize_492P(S32 device_address)
    GPIB_print("SAVEA?;");
    C8 *text = GPIB_read_ASC();
 
+   if ((text == NULL) || (GPIB_error_pending))
+      {
+      SA_shutdown();
+      return NULL;
+      }
+
    if (!strncmp(text,"SAVEA ON",8))
       {
       n_passes = 2;
@@ -185,6 +198,12 @@ C8 *synthesize_492P(S32 device_address)
 
    SA->hi_speed_acq = FALSE;
    SA_fetch_trace();
+
+   if (GPIB_error_pending)
+      {
+      SA_shutdown();
+      return NULL;
+      }
 
    DOUBLE dest_array[2][W_GRAT_49X];
    S32    n_points;
@@ -332,22 +351,26 @@ C8 *synthesize_856xA(S32  device_address, bool is_278X)
 
    if (!is_278X)
       {
-      GPIB_print("OL");      
+      GPIB_print("OL");
       S32 actual_len = 0;
       C8 *response = GPIB_read_BIN(80,TRUE,FALSE,&actual_len);
-      if (actual_len != 80) return NULL;
+      if ((response == NULL) || (actual_len != 80)) return NULL;
       memcpy(state, response, 80);
       }
    else
       {
       C8 *result = GPIB_query("TRDSP TRNOR?");
+      if ((result == NULL) || (GPIB_error_pending)) return NULL;
       _strupr(result);
       if (strstr(result,"OFF") != NULL) state[20] |= 4;
 
       result = GPIB_query("TRDSP TRA?");
+      if ((result == NULL) || (GPIB_error_pending)) return NULL;
       _strupr(result);
       if (strstr(result,"OFF") != NULL) state[20] |= 32;
       }
+
+   if (GPIB_error_pending) return NULL;
 
    S32 trace_blanked[2] = { state[20] & 4, state[20] & 32 };
 
@@ -356,7 +379,7 @@ C8 *synthesize_856xA(S32  device_address, bool is_278X)
 
    GPIB_print("OT");
    C8 *result = GPIB_read_ASC(sizeof(OT_buffer)-1);
-   if (result == NULL) return NULL;
+   if ((result == NULL) || (GPIB_error_pending)) return NULL;
    strcpy(OT_buffer, result);
 
    C8 *src = OT_buffer;
@@ -496,7 +519,7 @@ C8 *synthesize_3585A(S32 device_address)
    for (i=0; i < 10; i++)
       {
       C8 *result = GPIB_read_ASC(sizeof(annotation[i])-1);
-      assert(result != NULL);
+      if ((result == NULL) || (GPIB_error_pending)) return NULL;
       for (j=0; j < (S32) strlen(result); j++)
          {
          if (!isspace((U8) result[j])) { strcpy(original_annotation[i],&result[j]); break; }
@@ -675,8 +698,9 @@ C8 *synthesize_generic_SA(S32 device_address, bool SCPI)
    SA_STATE *SA = SA_startup();
    SA_parse_command_line("-t -G");  
    if (SCPI) SA_parse_command_line("-scpi");
-   if (!SA_connect(device_address)) { SA_shutdown(); return NULL; }
+   if ((!SA_connect(device_address, NULL, GPIB_error)) || (GPIB_error_pending)) { SA_shutdown(); return NULL; }
    SA_fetch_trace();
+   if (GPIB_error_pending) { SA_shutdown(); return NULL; }
 
    static DOUBLE dest_array[W_GRAT_8566];
    SA_resample_data(SA->dBm_values, SA->n_trace_points, dest_array, W_GRAT_8566, RT_SPLINE); 

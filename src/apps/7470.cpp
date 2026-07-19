@@ -324,6 +324,17 @@ ACQINST named_instruments[MAX_NAMED_INSTRUMENTS];
 S32 n_named_instruments;
 
 //
+// Unattended (command-line-driven) acquisition state -- see parse_command_line()
+//
+
+S32  CL_acquire_address  = -1;      // -acquire:<addr>
+S32  CL_acquire_shortcut = -1;      // -instrument:<substring>
+C8   CL_instrument_name[256] = "";
+C8   CL_out_filename[MAX_PATH] = "";// -out:<filename>
+bool CL_exit_when_done   = FALSE;   // -exit
+bool CL_headless         = FALSE;   // set whenever we're driven from the command line
+
+//
 // UI state
 //
 
@@ -698,14 +709,38 @@ S32 valid_GPIB_address(C8 *string)
 
 //****************************************************************************
 //
-// GPIB error handler
+// GPIB error reporting
+//
+// GPIB_error() itself lives in 7470_logic.cpp -- it does nothing but latch the
+// failure so the read or write that hit it can unwind normally.  Deciding how
+// to tell the user about it is this module's job.
+//
+// Show and clear any latched error.  Returns TRUE if one was pending.
 //
 //****************************************************************************
 
-void WINAPI GPIB_error(C8 *msg, S32 ibsta, S32 iberr, S32 ibcntl)
+bool GPIB_report_error(void)
 {
-   SAL_alert_box("GPIB Error",msg);
-   exit(1);
+   if (!GPIB_error_pending)
+      {
+      return FALSE;
+      }
+
+   C8 text[sizeof(GPIB_error_text)];
+   strcpy(text, GPIB_error_text);
+
+   GPIB_clear_error();
+
+   if (CL_headless)
+      {
+      fprintf(stderr, "GPIB error: %s\n", text);
+      }
+   else
+      {
+      SAL_alert_box("GPIB Error", "%s", text);
+      }
+
+   return TRUE;
 }
 
 //****************************************************************************
@@ -880,11 +915,16 @@ bool read_8510(S32 address,
    GPIB_set_EOS_mode(10);
    GPIB_set_serial_read_dropout(INI_serial_read_dropout);
 
-   C8 *ID = GPIB_query("OUTPERRO");    // ask for string to clear error state
+   GPIB_query("OUTPERRO");             // ask for string to clear error state
    Sleep(250);
 
    GPIB_disconnect();                  // return instrument to local control
    GPIB_init_status = 0;
+
+   if (GPIB_error_pending)
+      {
+      return FALSE;
+      }
 
    if (!CMD_listen(FALSE,
                    board_address,
@@ -985,14 +1025,24 @@ bool read_3561A(S32 address,
    S32 actual_len = 0;
    C8 *preamble = GPIB_read_BIN(4,TRUE,FALSE,&actual_len);
 
-   assert(actual_len == 4);
-   assert(preamble[0] == '#');
-   assert(preamble[1] == 'A');
-   
+   if ((preamble == NULL) || (actual_len != 4) ||
+       (preamble[0] != '#') || (preamble[1] != 'A'))
+      {
+      GPIB_disconnect();
+      GPIB_init_status = 0;
+      return FALSE;
+      }
+
    S32 expect_bytes = ((S32) preamble[2]) * 256 + (S32) preamble[3];
 
    C8 *state = GPIB_read_BIN(expect_bytes, TRUE, FALSE, &actual_len);
-   assert(actual_len == expect_bytes);
+
+   if ((state == NULL) || (actual_len != expect_bytes) || (expect_bytes <= 313))
+      {
+      GPIB_disconnect();
+      GPIB_init_status = 0;
+      return FALSE;
+      }
 
    S32 grid_state = !state[313];
 
@@ -1074,8 +1124,17 @@ bool read_49x(C8 *ID,
 
    C8 grat_state[256];
 
-   strcpy(grat_state,
-         GPIB_query("GRAT?"));         // save graticule illumination state
+   C8 *grat_reply = GPIB_query("GRAT?");   // save graticule illumination state
+
+   if ((grat_reply == NULL) || (GPIB_error_pending))
+      {
+      GPIB_disconnect();
+      GPIB_init_status = 0;
+      return FALSE;
+      }
+
+   _snprintf(grat_state, sizeof(grat_state)-1, "%s", grat_reply);
+   grat_state[sizeof(grat_state)-1] = 0;
 
    GPIB_cmd_printf("PTYPE HP7470");    // select HP7470 plotter compatibility
    GPIB_cmd_printf("GRAT ON");         // turn on graticule illumination
@@ -1558,9 +1617,9 @@ bool read_54XXX(S32 address,
 //
 //****************************************************************************
 
-bool read_instrument_data(S32      address,
-                          S32      optional_shortcut,
-                          C8      *filename)
+static bool read_instrument_data_inner(S32      address,
+                                       S32      optional_shortcut,
+                                       C8      *filename)
 {
    bool result = TRUE;
 
@@ -1651,6 +1710,12 @@ bool read_instrument_data(S32      address,
 
    GPIB_disconnect();                  // return instrument to local control
    GPIB_init_status = 0;
+
+   if ((ID == NULL) || (GPIB_error_pending))
+      {
+      SetCursor(hcurSave);
+      return FALSE;
+      }
 
    if (!_strnicmp(ID,"ID TEK/49",9))
       {
@@ -1763,13 +1828,43 @@ bool read_instrument_data(S32      address,
       else
 #endif
          {
-         SAL_alert_box("Error","Attempt to read from unsupported instrument model '%s'",
-            ID);
-         exit(1);
+         if (CL_headless)
+            {
+            fprintf(stderr, "Error: attempt to read from unsupported instrument model '%s'\n", ID);
+            }
+         else
+            {
+            SAL_alert_box("Error","Attempt to read from unsupported instrument model '%s'",
+               ID);
+            }
+
+         result = FALSE;
          }
       }
 
    SetCursor(hcurSave);
+   return result;
+}
+
+//
+// Wrapper that arms the GPIB error latch for the duration of one acquisition,
+// then reports whatever it caught.  Everything below this point is free to
+// bail out on GPIB_error_pending without worrying about who shows the box.
+//
+
+bool read_instrument_data(S32      address,
+                          S32      optional_shortcut,
+                          C8      *filename)
+{
+   GPIB_clear_error();
+
+   bool result = read_instrument_data_inner(address, optional_shortcut, filename);
+
+   if (GPIB_report_error())
+      {
+      result = FALSE;         // an error was latched, so the plot is incomplete regardless
+      }
+
    return result;
 }
 
@@ -2958,8 +3053,16 @@ char c;
                                &plot_len);
    if (plot_data == NULL)
       {
-      SAL_alert_box("Error","Couldn't read %s\n",filename);
-      exit(1);
+      if (CL_headless)
+         {
+         fprintf(stderr, "Error: couldn't read %s\n", filename);
+         }
+      else
+         {
+         SAL_alert_box("Error","Couldn't read %s\n",filename);
+         }
+
+      return;                          // leave whatever's already on the stage alone
       }
 
    //
@@ -3545,10 +3648,14 @@ void render_source_list(void)
                if (current_data_source >= n_data_sources)
                   {
                   current_data_source = n_data_sources-1;
-                  user_rotate = data_source_rotate[current_data_source];
-                  background  = data_source_background[current_data_source]; 
-                  alt_colors  = data_source_alt[current_data_source];
-                  antialias   = data_source_ant[current_data_source];
+
+                  if (current_data_source >= 0)      // (nothing left to fall back to if the
+                     {                               // failed acquisition was the only source)
+                     user_rotate = data_source_rotate[current_data_source];
+                     background  = data_source_background[current_data_source];
+                     alt_colors  = data_source_alt[current_data_source];
+                     antialias   = data_source_ant[current_data_source];
+                     }
                   }
 
                force_redraw = TRUE;
@@ -4597,14 +4704,14 @@ void CMD_acquire(S32      GPIB_address,     // 0 = nonaddressable serial adapter
 //
 //****************************************************************************
 
-bool CMD_listen(bool  auto_print,
-                S32   plotter_address,
-                C8   *explicit_filename,
-                S32   device_address,       // Must be -1 to make device-initiated plots non-refreshable!
-                C8   *device_command,
-                bool  loop,
-                C8   *preface,
-                bool  reset_to_local)
+static bool CMD_listen_inner(bool  auto_print,
+                             S32   plotter_address,
+                             C8   *explicit_filename,
+                             S32   device_address,       // Must be -1 to make device-initiated plots non-refreshable!
+                             C8   *device_command,
+                             bool  loop,
+                             C8   *preface,
+                             bool  reset_to_local)
 {
    while (1)
       {
@@ -4746,6 +4853,39 @@ bool CMD_listen(bool  auto_print,
 
    force_redraw = TRUE;
    return TRUE;
+}
+
+//
+// As with read_instrument_data(), arm the error latch around the whole
+// operation so a failed read reports once and leaves the display alone
+//
+
+bool CMD_listen(bool  auto_print,
+                S32   plotter_address,
+                C8   *explicit_filename,
+                S32   device_address,
+                C8   *device_command,
+                bool  loop,
+                C8   *preface,
+                bool  reset_to_local)
+{
+   GPIB_clear_error();
+
+   bool result = CMD_listen_inner(auto_print,
+                                  plotter_address,
+                                  explicit_filename,
+                                  device_address,
+                                  device_command,
+                                  loop,
+                                  preface,
+                                  reset_to_local);
+
+   if (GPIB_report_error())
+      {
+      result = FALSE;
+      }
+
+   return result;
 }
 
 //****************************************************************************
@@ -5097,6 +5237,378 @@ long FAR PASCAL WindowProc(HWND   hWnd,   UINT   message,
 
 //****************************************************************************
 //
+// Attach to the console we were launched from, if any, so an unattended
+// acquisition can report what happened
+//
+//****************************************************************************
+
+static void attach_parent_console(void)
+{
+   static bool already_tried = FALSE;
+
+   if (already_tried)
+      {
+      return;
+      }
+
+   already_tried = TRUE;
+
+   //
+   // If our output is already going somewhere -- a file or a pipe, because the
+   // caller redirected it -- the CRT has bound stdout/stderr to it and there's
+   // nothing to do.  Otherwise we're a GUI-subsystem app with nowhere to
+   // print, so borrow the console we were launched from if there is one
+   //
+
+   HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+
+   if ((h != NULL) && (h != INVALID_HANDLE_VALUE))
+      {
+      return;
+      }
+
+   if (!AttachConsole(ATTACH_PARENT_PROCESS))
+      {
+      return;
+      }
+
+   freopen("CONOUT$", "w", stdout);
+   freopen("CONOUT$", "w", stderr);
+}
+
+//****************************************************************************
+//
+// Print command-line usage
+//
+//****************************************************************************
+
+static void show_usage(void)
+{
+   printf("\n"
+          "%s\n"
+          "\n"
+          "Usage: 7470 [options] [files or GPIB addresses ...]\n"
+          "\n"
+          "Without options, 7470 runs interactively; any files or GPIB addresses on\n"
+          "the command line are loaded or acquired at startup.\n"
+          "\n"
+          "Unattended acquisition:\n"
+          "\n"
+          "  -acquire:<addr>     Request a plot from the instrument at GPIB address\n"
+          "                      <addr>, identifying it with an ID? query (the same\n"
+          "                      thing the Acquire menu's \"Request plot from supported\n"
+          "                      device at address <addr>\" entry does)\n"
+          "  -instrument:<text>  Skip the ID? query and use the 7470.ini instrument_n\n"
+          "                      entry whose name contains <text>.  Needed for the\n"
+          "                      models that can't be auto-detected, e.g.\n"
+          "                      -instrument:\"8566A\" for HP-GL/2 emulation\n"
+          "  -out:<filename>     Save the acquired plot to <filename> and exit.\n"
+          "                      .plt/.hgl/.hpg/.pgl saves the HP-GL/2 data as\n"
+          "                      received; .gif/.bmp/.pcx/.tga saves the rendered\n"
+          "                      image at the current display resolution\n"
+          "  -exit               Exit when the acquisition finishes, with or without\n"
+          "                      -out\n"
+          "  -?, -help           Show this text\n"
+          "\n"
+          "Exit status is 0 if the plot was acquired (and saved), 1 otherwise.\n"
+          "\n"
+          "Examples:\n"
+          "\n"
+          "  7470 -acquire:18 -out:trace.plt\n"
+          "  7470 -acquire:18 -out:trace.gif\n"
+          "  7470 -instrument:8566A -out:trace.plt\n"
+          "\n", szAppName);
+}
+
+//****************************************************************************
+//
+// Recognize command-line switches, leaving the traditional list of files and
+// GPIB addresses for the parser further down in WinMain()
+//
+// Returns FALSE if the program should exit immediately (bad or -? switch)
+//
+//****************************************************************************
+
+static bool CL_is_switch(C8 *token)
+{
+   return (token[0] == '-') || (token[0] == '/');
+}
+
+static bool parse_command_line(C8 *cmd_line, S32 *exit_code)
+{
+   *exit_code = 0;
+
+   C8 work[4096];
+   _snprintf(work, sizeof(work)-1, "%s", cmd_line);
+   work[sizeof(work)-1] = 0;
+
+   C8 *s = work;
+
+   while (*s)
+      {
+      //
+      // Isolate the next whitespace-delimited token, honoring double quotes
+      //
+
+      while ((*s == ' ') || (*s == '\t'))
+         {
+         ++s;
+         }
+
+      if (*s == 0)
+         {
+         break;
+         }
+
+      C8 token[MAX_PATH+64];
+      S32 n = 0;
+      bool in_quotes = FALSE;
+
+      while (*s)
+         {
+         if (*s == '\"')
+            {
+            in_quotes = !in_quotes;
+            ++s;
+            continue;
+            }
+
+         if ((!in_quotes) && ((*s == ' ') || (*s == '\t')))
+            {
+            break;
+            }
+
+         if (n < (S32) sizeof(token)-1)
+            {
+            token[n++] = *s;
+            }
+
+         ++s;
+         }
+
+      token[n] = 0;
+
+      if (!CL_is_switch(token))
+         {
+         continue;                     // a file or GPIB address -- handled later
+         }
+
+      CL_headless = TRUE;
+
+      C8 *body = &token[1];
+      C8 *value = strchr(body, ':');
+
+      if (value == NULL)
+         {
+         value = strchr(body, '=');
+         }
+
+      if (value != NULL)
+         {
+         *value = 0;
+         ++value;
+         }
+
+      if ((!_stricmp(body, "?")) || (!_stricmp(body, "h")) || (!_stricmp(body, "help")))
+         {
+         attach_parent_console();
+         show_usage();
+         return FALSE;
+         }
+      else if (!_stricmp(body, "acquire"))
+         {
+         if ((value == NULL) || (!isdigit((U8) value[0])))
+            {
+            attach_parent_console();
+            fprintf(stderr, "Error: -acquire requires a GPIB address, e.g. -acquire:18\n");
+            *exit_code = 1;
+            return FALSE;
+            }
+
+         CL_acquire_address = atoi(value);
+
+         if ((CL_acquire_address < 0) || (CL_acquire_address > 31))
+            {
+            attach_parent_console();
+            fprintf(stderr, "Error: GPIB address %d is out of range (0-31)\n", CL_acquire_address);
+            *exit_code = 1;
+            return FALSE;
+            }
+         }
+      else if (!_stricmp(body, "instrument"))
+         {
+         if ((value == NULL) || (value[0] == 0))
+            {
+            attach_parent_console();
+            fprintf(stderr, "Error: -instrument requires part of a 7470.ini instrument name\n");
+            *exit_code = 1;
+            return FALSE;
+            }
+
+         _snprintf(CL_instrument_name, sizeof(CL_instrument_name)-1, "%s", value);
+         CL_instrument_name[sizeof(CL_instrument_name)-1] = 0;
+         }
+      else if (!_stricmp(body, "out"))
+         {
+         if ((value == NULL) || (value[0] == 0))
+            {
+            attach_parent_console();
+            fprintf(stderr, "Error: -out requires a filename\n");
+            *exit_code = 1;
+            return FALSE;
+            }
+
+         _snprintf(CL_out_filename, sizeof(CL_out_filename)-1, "%s", value);
+         CL_out_filename[sizeof(CL_out_filename)-1] = 0;
+
+         CL_exit_when_done = TRUE;
+         }
+      else if (!_stricmp(body, "exit"))
+         {
+         CL_exit_when_done = TRUE;
+         }
+      else
+         {
+         attach_parent_console();
+         fprintf(stderr, "Error: unrecognized option '%s'\n", token);
+         show_usage();
+         *exit_code = 1;
+         return FALSE;
+         }
+      }
+
+   //
+   // -out needs something to save, and a bare -instrument implies acquisition
+   // from that instrument's own address
+   //
+
+   if ((CL_acquire_address == -1) && (CL_instrument_name[0] == 0) &&
+       (CL_out_filename[0] != 0))
+      {
+      attach_parent_console();
+      fprintf(stderr, "Error: -out requires -acquire and/or -instrument\n");
+      *exit_code = 1;
+      return FALSE;
+      }
+
+   if (CL_headless)
+      {
+      attach_parent_console();
+      }
+
+   return TRUE;
+}
+
+//****************************************************************************
+//
+// Perform one unattended acquisition, then optionally save it
+//
+// Returns the process exit code
+//
+//****************************************************************************
+
+static S32 CL_acquire_and_save(void)
+{
+   //
+   // Resolve -instrument:<text> against the named instruments loaded from
+   // 7470.ini.  A match supplies both the acquisition method and, unless
+   // -acquire overrode it, the GPIB address
+   //
+
+   if (CL_instrument_name[0])
+      {
+      C8 wanted[sizeof(CL_instrument_name)];
+      strcpy(wanted, CL_instrument_name);
+      _strlwr(wanted);
+
+      for (S32 i=0; i < n_named_instruments; i++)
+         {
+         C8 name[sizeof(named_instruments[0].name)];
+         strcpy(name, named_instruments[i].name);
+         _strlwr(name);
+
+         if (strstr(name, wanted) != NULL)
+            {
+            CL_acquire_shortcut = i;
+            break;
+            }
+         }
+
+      if (CL_acquire_shortcut == -1)
+         {
+         fprintf(stderr, "Error: no 7470.ini instrument_n entry matches '%s'.  Known entries:\n",
+            CL_instrument_name);
+
+         for (S32 i=0; i < n_named_instruments; i++)
+            {
+            fprintf(stderr, "   %s\n", named_instruments[i].name);
+            }
+
+         return 1;
+         }
+
+      printf("Using instrument entry '%s'\n", named_instruments[CL_acquire_shortcut].name);
+
+      if (CL_acquire_address == -1)
+         {
+         CL_acquire_address = named_instruments[CL_acquire_shortcut].addr;
+         }
+      }
+
+   printf("Acquiring plot from GPIB address %d . . .\n", CL_acquire_address);
+
+   S32 n_before = n_data_sources;
+
+   CMD_acquire(CL_acquire_address, CL_acquire_shortcut);
+
+   //
+   // render_source_list() is what actually talks to the instrument; on failure
+   // it removes the source we just added, exactly as it would if the user had
+   // misclicked an acquisition shortcut interactively
+   //
+
+   force_redraw = FALSE;
+   render_source_list();
+   refresh();
+
+   if (n_data_sources <= n_before)
+      {
+      fprintf(stderr, "Acquisition failed.\n");
+      return 1;
+      }
+
+   printf("Acquired %s\n", data_source_file[current_data_source]);
+
+   if (CL_out_filename[0])
+      {
+      if (strrchr(CL_out_filename, '.') == NULL)
+         {
+         fprintf(stderr, "Error: -out filename '%s' needs an extension "
+                         "(.plt/.hgl/.hpg/.pgl, or .gif/.bmp/.pcx/.tga)\n",
+            CL_out_filename);
+         return 1;
+         }
+
+      CMD_save(CL_out_filename);
+
+      FILE *test = fopen(CL_out_filename, "rb");
+
+      if (test == NULL)
+         {
+         fprintf(stderr, "Error: could not write %s\n", CL_out_filename);
+         return 1;
+         }
+
+      fclose(test);
+
+      printf("Saved %s\n", CL_out_filename);
+      }
+
+   return 0;
+}
+
+//****************************************************************************
+//
 // Windows main() function
 //
 //****************************************************************************
@@ -5106,7 +5618,19 @@ int PASCAL WinMain(HINSTANCE hInst,
                    LPSTR lpCmdLine,
                    int nCmdShow)
 {
-   global_dirs.init("KE5FX", "GPIB", FALSE); 
+   global_dirs.init("KE5FX", "GPIB", FALSE);
+
+   //
+   // Pick off any command-line switches before anything else, so -? and bad
+   // options don't have to bring up a window first
+   //
+
+   S32 CL_exit_code = 0;
+
+   if (!parse_command_line(lpCmdLine, &CL_exit_code))
+      {
+      return CL_exit_code;
+      }
 
    //
    // Initialize system abstraction layer -- must succeed in order to continue
@@ -5685,8 +6209,9 @@ int PASCAL WinMain(HINSTANCE hInst,
       // set of files it specifies) to the input-source list
       //
 
-      C8 src[MAX_PATH];
-      strcpy(src, lpCmdLine);
+      C8 src[4096];
+      _snprintf(src, sizeof(src)-1, "%s", lpCmdLine);
+      src[sizeof(src)-1] = 0;
 
       S32 n = 0;
 
@@ -5725,6 +6250,15 @@ int PASCAL WinMain(HINSTANCE hInst,
             //
 
             break;
+            }
+
+         //
+         // Skip switches -- parse_command_line() has already consumed them
+         //
+
+         if (CL_is_switch(input))
+            {
+            continue;
             }
 
          //
@@ -5824,6 +6358,24 @@ int PASCAL WinMain(HINSTANCE hInst,
    background  = data_source_background[current_data_source];
    alt_colors  = data_source_alt[current_data_source];
    antialias   = data_source_ant[current_data_source];
+
+   //
+   // Unattended acquisition requested from the command line
+   //
+
+   if ((CL_acquire_address != -1) || (CL_instrument_name[0]))
+      {
+      INI_auto_save[0]    = 0;         // (these would fight with -out)
+      INI_auto_print_mode = 0;
+
+      CL_exit_code = CL_acquire_and_save();
+
+      if (CL_exit_when_done)
+         {
+         WinClean();
+         return CL_exit_code;
+         }
+      }
 
    // -------------------------------
    // Main plot loop

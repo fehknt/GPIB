@@ -3,6 +3,29 @@
 
 #include "typedefs.h"
 
+//
+// Non-fatal GPIB error latch
+//
+// GPIBLIB invokes the GPIBERR handler from inside a failed vi/ib read or
+// write, and every one of those call sites returns NULL or 0 to its caller as
+// soon as the handler returns.  GPIB_error() takes advantage of that: instead
+// of terminating the program (which would throw away the plot that's currently
+// on screen because of one mistyped address or misclicked acquisition
+// shortcut), it records the first error of the operation and lets the failed
+// read unwind normally.
+//
+// Acquisition code arms the latch with GPIB_clear_error(), then treats a set
+// GPIB_error_pending as "discard whatever partial data was received and leave
+// the previous trace alone".  Reporting the error to the user is the
+// application's business -- see GPIB_report_error() in 7470.cpp.
+//
+
+extern S32 GPIB_error_pending;
+extern C8  GPIB_error_text[2048];
+
+void WINAPI GPIB_error       (C8 *msg, S32 ibsta, S32 iberr, S32 ibcntl);
+void        GPIB_clear_error (void);
+
 class IGPIBInterface {
 public:
     virtual ~IGPIBInterface() {}

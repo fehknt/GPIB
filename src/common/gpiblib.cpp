@@ -2007,9 +2007,15 @@ C8 *WINAPI GPIB_read_ASC(S32 max_len,
     ViStatus status =
         p_viRead(instr, (ViPBuf)buffer, sizeof(buffer) - 1, &retCnt);
     if (status < 0) {
+      iberr = status;
       if (report_timeout)
         GpibError("viRead_ASC Error: 0x%08X", status);
-      return "";
+
+      // Hand back the (now empty) static buffer rather than a string literal:
+      // callers such as 7470's synthesizers pass this result straight to
+      // _strupr() and friends, which would fault on read-only memory
+      buffer[0] = '\0';
+      return buffer;
     }
 
     cnt = retCnt;
