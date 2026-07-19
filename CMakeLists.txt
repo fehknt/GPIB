@@ -90,7 +90,30 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+# Unit-test suites, one per src/common (and a few src/apps) module.
+#
+# Not covered, deliberately -- these modules are thin wrappers over hardware or
+# a live display and have no logic that can be exercised without the device
+# present, so there is nothing a self-contained unit test could assert:
+#   - comport.cpp   : Win32 serial-port I/O (needs a COM port / GPIB adapter)
+#   - di154.cpp     : DataQ DI-154 data-acquisition device (needs the USB DAQ)
+#   - waterfall.cpp : real-time waterfall rendering (needs a display surface)
+# The gfxfile image writers have a softer version of the same dependency:
+# test_gfxfile drives them through a hand-built off-display VFX window, so it can
+# verify file geometry and structure (including the PNG path) headless, but not
+# pixel color -- see that file. If the hardware modules ever grow testable pure
+# logic, add suites for them here.
 set(TEST_LIST "appfile" "7470lex" "spline" "sparams" "timeutil" "gfxfile" "ipconn" "renderer" "hpgl_render" "xy" "pn_math" "gpiblib" "satrace" "gnss" "gpib_utils" "7470_synthesizers" "7470_logic" "specan" "recorder" "vna_math")
+
+# The test exes load gpiblib.dll, specan.dll, winvfx16.dll, etc. from bin/ (the
+# gpiblib target's output dir, $<TARGET_FILE_DIR:gpiblib> below), so discovery
+# and execution need bin/ on PATH.  $ENV{PATH} is a ';'-separated
+# list containing space-bearing entries ("C:\Program Files\..."); passed raw
+# into an ENVIRONMENT test property, CMake treats every ';' as a list separator
+# and the discovery helper mis-parses the split fragments (a dir like
+# "C:/Program Files/..." gets chopped at the space).  Escape the separators so
+# the whole value survives as a single PATH string.
+string(REPLACE ";" "\\;" GPIB_TEST_PATH "$ENV{PATH}")
 
 foreach(test_name IN LISTS TEST_LIST)
     add_executable(test_${test_name} tests/test_${test_name}.cpp)
@@ -110,6 +133,6 @@ foreach(test_name IN LISTS TEST_LIST)
     include(GoogleTest)
     gtest_discover_tests(test_${test_name}
         WORKING_DIRECTORY "$<TARGET_FILE_DIR:gpiblib>"
-        PROPERTIES ENVIRONMENT "PATH=$<TARGET_FILE_DIR:gpiblib>;$ENV{PATH}"
+        PROPERTIES ENVIRONMENT "PATH=$<TARGET_FILE_DIR:gpiblib>\\;${GPIB_TEST_PATH}"
     )
 endforeach()
