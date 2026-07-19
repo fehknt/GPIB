@@ -56,6 +56,8 @@ In addition to running interactively, 7470 can acquire a single plot and save it
 
 `-out` accepts `.plt`/`.hgl`/`.hpg`/`.pgl` to save the HP-GL/2 data exactly as received, or `.gif`/`.bmp`/`.pcx`/`.tga` to save the rendered image at the current display resolution. Exit status is 0 if the plot was acquired and saved, 1 otherwise. A GPIB failure is reported on stderr rather than in a message box.
 
+A bare GPIB address on the command line (`7470 18`) acquires from that address at startup and stays interactive. It auto-detects the instrument with an ID? query; to bind an address to a specific `instrument_n` entry from 7470.ini, use `-acquire:18 -instrument:<text>`.
+
 ---
 
 ## PN

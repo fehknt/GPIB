@@ -5290,7 +5290,9 @@ static void show_usage(void)
           "Usage: 7470 [options] [files or GPIB addresses ...]\n"
           "\n"
           "Without options, 7470 runs interactively; any files or GPIB addresses on\n"
-          "the command line are loaded or acquired at startup.\n"
+          "the command line are loaded or acquired at startup.  A bare address\n"
+          "auto-detects the instrument with an ID? query -- use -instrument to pick\n"
+          "a specific 7470.ini entry instead.\n"
           "\n"
           "Unattended acquisition:\n"
           "\n"
@@ -6299,15 +6301,19 @@ int PASCAL WinMain(HINSTANCE hInst,
             S32 addr = valid_GPIB_address(buffer);
 
             data_source_GPIB    [n_data_sources] = addr;
-            data_source_shortcut[n_data_sources] = -1;
 
-            for (S32 i=0; i < n_named_instruments; i++)
-               {
-               if (named_instruments[i].addr == addr)      // (Use the last matching entry, so 18 will
-                  {                                        // correspond to the F8 option for the 856xA)
-                  data_source_shortcut[n_data_sources] = i;
-                  }
-               }
+            //
+            // A bare address auto-detects the instrument with an ID? query.
+            //
+            // This used to bind the address to the last matching 7470.ini
+            // instrument_n entry instead, which meant "7470 18" silently
+            // selected the HP-GL/2 emulation shortcut for the 856xA on a
+            // typical configuration -- the wrong choice for anything else
+            // living at address 18, and a confusing one to debug.  Use
+            // -acquire:<addr> -instrument:<text> to ask for a specific entry.
+            //
+
+            data_source_shortcut[n_data_sources] = -1;
 
             if (addr == -1)
                {
