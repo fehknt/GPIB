@@ -1815,11 +1815,15 @@ Image files (*.PCX)\0*.PCX\0\
    // Force string to end in a valid suffix
    //
 
-   C8 *suffixes[] = 
+   // Must stay in the same order as lpstrFilter above -- the default suffix is
+   // suffixes[fn.nFilterIndex-1].  (This previously did not match the filter
+   // order at all, and lacked .png.)
+   C8 *suffixes[] =
       {
+      ".bmp",
+      ".png",
       ".gif",
       ".tga",
-      ".bmp",
       ".pcx",
       };
 

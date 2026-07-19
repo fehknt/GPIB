@@ -2301,6 +2301,13 @@ bool get_save_filename(C8 *string)
    // Force string to end in a valid suffix
    //
 
+   //
+   // NOTE: this list must stay in the same order as lpstrFilter above -- the
+   // default suffix for a filename typed without an extension is chosen by
+   // suffixes[fn.nFilterIndex-1].  (An out-of-order entry here is what made a
+   // PNG save land as .gif.)
+   //
+
    C8 *suffixes[] =
       {
       ".plt",
@@ -2310,6 +2317,7 @@ bool get_save_filename(C8 *string)
 #ifdef PCL_CODE
       ".pcl",
 #endif
+      ".png",
       ".gif",
       ".tga",
       ".bmp",
