@@ -13603,7 +13603,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_SEPARATOR, 0, NULL);
    AppendMenu(pop, MF_STRING, IDM_QUIT,         "Quit \t q");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&File");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&File");
 
    pop = CreateMenu();
 
@@ -13618,7 +13618,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_SEPARATOR, 0, NULL);
    AppendMenu(pop, MF_STRING, IDM_VIS,          "Toggle visibility of selected source \t v");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&View");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&View");
 
    pop = CreateMenu();
 
@@ -13634,7 +13634,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_STRING, IDM_MED_CONTRAST, "Medium contrast");
    AppendMenu(pop, MF_STRING, IDM_HIGH_CONTRAST,"High contrast \t C");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&Display");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&Display");
 
    pop = CreateMenu();
 
@@ -13660,7 +13660,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_SEPARATOR, 0, NULL);
    AppendMenu(pop, MF_STRING, IDM_EDIT_CAPTION,   "Edit caption for selected trace ... \t e");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&Trace");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&Trace");
 
    pop = CreateMenu();
 
@@ -13674,7 +13674,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_STRING, IDM_ALL,          "All");
    AppendMenu(pop, MF_STRING, IDM_NONE,         "None");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&Legend");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&Legend");
 
    pop = CreateMenu();
 
@@ -13702,7 +13702,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_SEPARATOR, 0, NULL);
    AppendMenu(pop, MF_STRING, IDM_REPEAT_LAST,  "&Repeat last acquisition ... \t Space");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&Acquire");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&Acquire");
 
    pop = CreateMenu();
 
@@ -13710,7 +13710,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_SEPARATOR, 0, NULL);
    AppendMenu(pop, MF_STRING, IDM_ABOUT,        "&About PN");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&Help");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&Help");
 
    SetMenu(hWnd,hmenu);
 

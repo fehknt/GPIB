@@ -520,7 +520,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_SEPARATOR, 0, NULL);
    AppendMenu(pop, MF_STRING, IDM_QUIT,         "Quit \t q");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&File");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&File");
 
    pop = CreateMenu();
 
@@ -532,7 +532,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_STRING, IDM_NEXT,         "Next source \t +");
    AppendMenu(pop, MF_STRING, IDM_PREV,         "Previous source \t -");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&View");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&View");
 
    pop = CreateMenu();
 
@@ -549,14 +549,14 @@ void main_menu_init(void)
    AppendMenu(pop, MF_SEPARATOR, 0, NULL);
    AppendMenu(pop, MF_STRING, IDM_ROTATE,       "Rotate\t r");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&Display");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&Display");
 
    pop = CreateMenu();
 
    AppendMenu(pop, MF_STRING, IDM_EDIT_CAPTION, "Edit caption text... \t c"); 
    AppendMenu(pop, MF_STRING, IDM_ERASE_CAPTION,"Erase most-recently-added caption \t e");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&Caption");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&Caption");
 
    pop = CreateMenu();
 
@@ -589,7 +589,7 @@ void main_menu_init(void)
       AppendMenu(pop, MF_STRING, i+IDM_REQUESTS, val);
       }
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&Acquire");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&Acquire");
 
    pop = CreateMenu();
 
@@ -605,7 +605,7 @@ void main_menu_init(void)
       AppendMenu(pop, MF_STRING, i+IDM_PLOTTER_ADDR+1, val);
       }
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&GPIB");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&GPIB");
 
    pop = CreateMenu();
 
@@ -613,7 +613,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_SEPARATOR, 0, NULL);
    AppendMenu(pop, MF_STRING, IDM_ABOUT,        "&About 7470");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,      "&Help");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,      "&Help");
 
    SetMenu(hWnd,hmenu);
    DrawMenuBar(hWnd);

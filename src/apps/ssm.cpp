@@ -3558,7 +3558,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_SEPARATOR, 0, NULL);
    AppendMenu(pop, MF_STRING, IDM_QUIT, "Quit\tEsc");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop, "&File");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop, "&File");
 
    pop = CreateMenu();
 
@@ -3576,7 +3576,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_STRING, IDM_PTSAMPLE,   "Point-sample");
    AppendMenu(pop, MF_STRING, IDM_SPLINE,     "Cubic spline");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,   "&Points");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,   "&Points");
 
    pop = CreateMenu();
 
@@ -3584,7 +3584,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_STRING, IDM_DOTS,       "Dots");
    AppendMenu(pop, MF_STRING, IDM_BARS,       "Bars");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,   "&Style");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,   "&Style");
 
    pop = CreateMenu();
 
@@ -3611,7 +3611,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_SEPARATOR, 0, NULL);
    AppendMenu(pop, MF_STRING, IDM_FS_TOGGLE,  "Toggle fullscreen mode\tAlt-Enter");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,   "&Display");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,   "&Display");
 
    pop = CreateMenu();
 
@@ -3623,7 +3623,7 @@ void main_menu_init(void)
 
 //   AppendMenu(pop, MF_STRING, IDM_DELTA_MARKER, "Enable delta marker");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,   "&Measure");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,   "&Measure");
 
    pop = CreateMenu();
 
@@ -3653,7 +3653,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_SEPARATOR, 0, NULL);
    AppendMenu(pop, MF_STRING,IDM_HI_SPEED,"Acquire at maximum available speed\tQ");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,  "&Acquire");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,  "&Acquire");
 
    pop = CreateMenu();
 
@@ -3661,7 +3661,7 @@ void main_menu_init(void)
    AppendMenu(pop, MF_SEPARATOR, 0, NULL);
    AppendMenu(pop, MF_STRING, IDM_ABOUT,        "&About SSM");
 
-   AppendMenu(hmenu, MF_POPUP, (UINT) pop,   "&Help");
+   AppendMenu(hmenu, MF_POPUP, (UINT_PTR) pop,   "&Help");
 
    SetMenu(hwnd,hmenu);
    DrawMenuBar(hwnd);

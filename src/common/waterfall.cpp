@@ -1150,27 +1150,31 @@ void WATERFALL::draw_graph_row(time_t  acquisition_time,
       row_list[record].caption[0] = 0;
 
    //
-   // Convert floating-point input data to 24.8 fixed-point (also storing it in row
-   // record for mouse queries)
+   // Convert floating-point input data to 24.8 fixed-point (also storing the
+   // raw float in the row record for mouse queries)
+   //
+   // This was originally hand-written x87 asm (fld/fst/fmul/fistp) for two
+   // reasons, both now obsolete:
+   //   * Speed -- older MSVC turned every (int)(float) cast into a _ftol call
+   //     that saved/restored the FPU control word each time, which hurt in a
+   //     per-point loop.  Modern MSVC (SSE2, the default on x86 and x64) emits
+   //     a single cvtss2si per point for the code below.
+   //   * Rounding -- fistp rounds to nearest (the FPU default) whereas a plain
+   //     (S32) cast truncates toward zero.  lrintf() keeps round-to-nearest, so
+   //     the fixed-point values are unchanged.
+   // Multiplying by 256 (a power of two) is exact in float, so this produces
+   // bit-identical results to the old asm for all finite inputs -- and it
+   // compiles on x64, where inline __asm is not supported.
    //
 
    SINGLE *row_data = row_list[record].data;
 
    S32 temp_array[4096];
-   SINGLE x256 = 256.0F;
 
    for (i=0; i < display_width; i++)
       {
-      _asm
-         {
-         mov ebx,i
-         mov eax,data
-         mov ecx,row_data
-         fld [eax][ebx*4]
-         fst DWORD PTR [ecx][ebx*4]
-         fmul x256
-         fistp temp_array[ebx*4]
-         }
+      row_data[i]   = data[i];
+      temp_array[i] = (S32) lrintf(data[i] * 256.0F);
       }
 
    //
